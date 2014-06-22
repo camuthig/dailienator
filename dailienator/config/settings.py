@@ -17,7 +17,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'd3#!1n4l9sc1dhng7mjq2+w5ji^@wi)#bv&_&k^ph8fy^*adg+'
+SECRET_KEY = os.environ.get('DAILIENATOR_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DAILIENATOR_DEBUG')
@@ -29,15 +29,24 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-INSTALLED_APPS = (
-    'django.contrib.admin',
+CORE_APPS = (
+	'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'south',
 )
+
+THIRD_PARTY_APPS = (
+	'south',
+)
+
+INTERNAL_APPS = (
+	'dailienator.daily',
+)
+
+INSTALLED_APPS = CORE_APPS + THIRD_PARTY_APPS + INTERNAL_APPS
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
