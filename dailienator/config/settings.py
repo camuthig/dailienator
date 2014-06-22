@@ -20,9 +20,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = 'd3#!1n4l9sc1dhng7mjq2+w5ji^@wi)#bv&_&k^ph8fy^*adg+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DAILIENATOR_DEBUG')
 
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = os.environ.get('DAILIENATOR_DEBUG')
 
 ALLOWED_HOSTS = []
 
