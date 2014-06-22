@@ -26,6 +26,9 @@ TEMPLATE_DEBUG = os.environ.get('DAILIENATOR_DEBUG')
 
 ALLOWED_HOSTS = []
 
+#Override the authentication user with my customer model
+AUTH_USER_MODEL = 'daily.AccountUser'
+
 
 # Application definition
 
