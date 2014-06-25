@@ -1,0 +1,45 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="{% static "css/base.css" %}" />
+    <title>{% block title %}{% endblock %}</title>
+    <script type="text/javascript" src="{% static "js/jquery-1.11.1.js" %}"></script>
+    <!--[if IE]>
+        <script type="text/javascript" src="{% static "js/selectivizr-min.js" %}"></script>
+        <script type="text/javascript" src="{% static "js/html5shiv.js" %}"></script>
+    <![endif]-->
+    {% block head_content %}{% endblock %}
+</head>
+<body>
+	<div id="pagewrap">
+		<div id="cssmenu">
+			<ul>
+			   <li class="logo"><a class="logo" href="/home">Dailienator</a></li>
+			   <li><a href="/administration/user_profile"><span>Profile</span></a></li>
+			   <li class="has-sub"><a href="/administration/account"><span>Account</span></a>
+			      <ul>
+			         <li><a href="/register/user"><span>Add Users</span></a></li>
+			         <li><a href="/delete/user"><span>Remove Users</span></a></li>
+			         <li class="last"><a href="/administration/account"><span>Edit Account</span></a></li>
+			      </ul>
+			   </li>
+			   <li class="last"><a href="/generate"><span>Daily</span></a></li>
+			   <li class="logout"><a href="/logout">Logout</a></li>
+			</ul>
+		</div>
+		<div id="mainpage">
+			<div id="container">
+            	{% block content %}{% endblock %}
+			</div>
+		</div>
+	</div>
+	<footer id="sitefooter">
+		<div id='copyfloat'>
+            <div id="copyright">
+                <p>Copyright Kringle Software</p>
+            </div>
+        </div>
+	</footer>
+</body>
+</html>

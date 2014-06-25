@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+{% load staticfiles %}
+<head>
+    <link rel="stylesheet" href="{% static "css/base.css" %}" />
+    <title>{% block title %}{% endblock %}</title>
+    <script type="text/javascript" src="{% static "js/jquery-1.11.1.js" %}"></script>
+    <!--[if IE]>
+        <script type="text/javascript" src="{% static "js/selectivizr-min.js" %}"></script>
+        <script type="text/javascript" src="{% static "js/html5shiv.js" %}"></script>
+    <![endif]-->
+</head>
+<body>
+	<div id="pagewrap">
+		<div id="cssmenu">
+			<ul>
+			   <li class="logo"><a class="logo" href="/">Dailienator</a></li>
+			   <li class="logout"><a href="/login">Login</a></li>
+			</ul>
+		</div>
+		<div id="mainpage">
+			<div id="container">
+            	{% block content %}{% endblock %}
+			</div>
+		</div>
+	</div>
+	<footer id="sitefooter">
+		<div id='copyfloat'>
+            <div id="copyright">
+                <p>Copyright Kringle Software</p>
+            </div>
+        </div>
+	</footer>
+</body>
+</html>

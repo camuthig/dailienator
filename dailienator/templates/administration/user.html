@@ -1,0 +1,19 @@
+{% extends "home/base.html" %}
+{% block content %}
+  <h1>Edit Profile</h1>
+
+<form method="post" action="">{% csrf_token %}
+    {{ formset.management_form }}
+    <table>
+        {% for form in formset %}
+        {{ form }}
+        {% endfor %}
+    </table>
+    <input type="submit" value="Update user">
+</form>
+
+<a href="/administration/user/password_change">Update Dailienator Password</a>
+<br />
+<a href="/administration/user/catertrax/password_change/">Update Catertrax Password</a>
+
+{% endblock %}
