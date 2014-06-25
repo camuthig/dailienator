@@ -1,0 +1,8 @@
+<h1>Account Users</h1>
+<ul>
+{% for accountuser in object_list %}
+    <li>{{ accountuser.username }} - {{ accountuser.first_name }} {{ accountuser.last_name }}</li>
+{% empty %}
+    <li>No account users yet.</li>
+{% endfor %}
+</ul>
