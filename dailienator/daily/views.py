@@ -1,11 +1,15 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
+import logging
 from models import AccountUser
 from django.views.generic import ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.core.urlresolvers import reverse_lazy
 
 # Create your views here.
+
+logger = logging.getLogger(__name__)
 
 #this was login_user, but I'm just testing
 def home(request):
@@ -20,7 +24,7 @@ def home(request):
                 # Redirect to a success page.
                 print ('Successfully logged in.')
                 logger.debug('Logged in successfully, redirecting to home page.')
-                return redirect('/home/')
+                return redirect('/users/')
             else:
                 messages.error(request, 'The given user is inactive.')
                 return render(request, "home/login.html")
