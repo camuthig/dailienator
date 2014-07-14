@@ -8,14 +8,53 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        # Adding model 'AccountUser'
+        db.create_table(u'sodexoaccounts_accountuser', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('password', self.gf('django.db.models.fields.CharField')(max_length=128)),
+            ('last_login', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
+            ('is_superuser', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('username', self.gf('django.db.models.fields.CharField')(unique=True, max_length=30)),
+            ('first_name', self.gf('django.db.models.fields.CharField')(max_length=30, blank=True)),
+            ('last_name', self.gf('django.db.models.fields.CharField')(max_length=30, blank=True)),
+            ('email', self.gf('django.db.models.fields.EmailField')(max_length=75, blank=True)),
+            ('is_staff', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('is_active', self.gf('django.db.models.fields.BooleanField')(default=True)),
+            ('date_joined', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
+            ('catertrax_username', self.gf('django.db.models.fields.CharField')(max_length=255)),
+            ('catertrax_password', self.gf('dailienator.common.aesfield.field.AESField')(max_length=255, aes_key='catertrax_key')),
+        ))
+        db.send_create_signal(u'sodexoaccounts', ['AccountUser'])
 
-        # Changing field 'AccountUser.catertrax_password'
-        db.alter_column(u'daily_accountuser', 'catertrax_password', self.gf('dailienator.common.aesfield.field.AESField')(max_length=255, aes_key='catertrax_key'))
+        # Adding M2M table for field groups on 'AccountUser'
+        m2m_table_name = db.shorten_name(u'sodexoaccounts_accountuser_groups')
+        db.create_table(m2m_table_name, (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('accountuser', models.ForeignKey(orm[u'sodexoaccounts.accountuser'], null=False)),
+            ('group', models.ForeignKey(orm[u'auth.group'], null=False))
+        ))
+        db.create_unique(m2m_table_name, ['accountuser_id', 'group_id'])
+
+        # Adding M2M table for field user_permissions on 'AccountUser'
+        m2m_table_name = db.shorten_name(u'sodexoaccounts_accountuser_user_permissions')
+        db.create_table(m2m_table_name, (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('accountuser', models.ForeignKey(orm[u'sodexoaccounts.accountuser'], null=False)),
+            ('permission', models.ForeignKey(orm[u'auth.permission'], null=False))
+        ))
+        db.create_unique(m2m_table_name, ['accountuser_id', 'permission_id'])
+
 
     def backwards(self, orm):
+        # Deleting model 'AccountUser'
+        db.delete_table(u'sodexoaccounts_accountuser')
 
-        # Changing field 'AccountUser.catertrax_password'
-        db.alter_column(u'daily_accountuser', 'catertrax_password', self.gf('django.db.models.fields.CharField')(max_length=255))
+        # Removing M2M table for field groups on 'AccountUser'
+        db.delete_table(db.shorten_name(u'sodexoaccounts_accountuser_groups'))
+
+        # Removing M2M table for field user_permissions on 'AccountUser'
+        db.delete_table(db.shorten_name(u'sodexoaccounts_accountuser_user_permissions'))
+
 
     models = {
         u'auth.group': {
@@ -38,7 +77,7 @@ class Migration(SchemaMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
-        u'daily.accountuser': {
+        u'sodexoaccounts.accountuser': {
             'Meta': {'object_name': 'AccountUser'},
             'catertrax_password': ('dailienator.common.aesfield.field.AESField', [], {'max_length': '255', 'aes_key': "'catertrax_key'"}),
             'catertrax_username': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
@@ -58,4 +97,4 @@ class Migration(SchemaMigration):
         }
     }
 
-    complete_apps = ['daily']
+    complete_apps = ['sodexoaccounts']

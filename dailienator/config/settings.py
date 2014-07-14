@@ -30,7 +30,7 @@ TEMPLATE_DIRS = (
 ALLOWED_HOSTS = []
 
 #Override the authentication user with my customer model
-AUTH_USER_MODEL = 'daily.AccountUser'
+AUTH_USER_MODEL = 'sodexoaccounts.AccountUser'
 
 # Keys used by AESFields
 AES_KEYS= {
@@ -54,7 +54,7 @@ THIRD_PARTY_APPS = (
 )
 
 INTERNAL_APPS = (
-	'dailienator.daily',
+	'dailienator.sodexoaccounts',
 	'dailienator.common.aesfield',
 )
 
