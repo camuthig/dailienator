@@ -24,6 +24,9 @@ class AccountUserListView(ListView):
     model = AccountUser
     fields = ['username', 'first_name', 'last_name']
     paginate_by = 15
+    
+    def get_queryset(self):
+        return AccountUser.objects.filter(account = self.request.user.account)
 
 class AccountUserCreateView(CreateView):
     model = AccountUser
@@ -40,6 +43,9 @@ class AccountUserUpdateView(UpdateView):
     model = AccountUser
     fields = ['username', 'first_name', 'last_name', 'email',
     			'catertrax_username']
+    
+    def get_queryset(self):
+        return AccountUser.objects.filter(account = self.request.user.account)
     def get_success_url(self):
         return reverse_lazy('accountuser-update', kwargs=self.kwargs)
     def get_object(self, queryset=None):
@@ -63,6 +69,9 @@ class AccountUserUpdateView(UpdateView):
 class AccountUserDeleteView(DeleteView):
     model = AccountUser
     success_url = reverse_lazy('accountuser-list') 
+
+    def get_queryset(self):
+        return AccountUser.objects.filter(account = self.request.user.account)
     def get_object(self, queryset=None):
         if queryset is None:
             queryset = self.get_queryset()
@@ -88,9 +97,6 @@ class AccountUpdateView(UpdateView):
         return reverse_lazy('account-update')
 
     def get_object(self, queryset=None):
-        if queryset is None:
-            queryset = self.get_queryset()
-
         account = self.request.user.account
         if account is not None:
             return account
