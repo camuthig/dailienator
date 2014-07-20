@@ -1,0 +1,35 @@
+{% extends "home/base.html" %}
+
+{% block content %}
+    <h1>Edit Profile</h1>
+    
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <b>
+    Welcome, {{request.user.first_name}}
+    <b>
+    {% if request.user.is_staff %}
+        <br />
+        let's <a href="/admin">admin </a>
+    {% endif %}
+
+    <form method="post" action="">{% csrf_token %}
+        {{ formset.management_form }}
+        <table>
+            {% for form in formset %}
+            {{ form }}
+            {% endfor %}
+        </table>
+        <input type="submit" value="Update user">
+    </form>
+    
+    <a href="/administration/user/password_change">Update Dailienator Password</a>
+    <br />
+    <a href="/administration/user/catertrax/password_change/">Update Catertrax Password</a>
+    <br />
+{% endblock %}

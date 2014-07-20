@@ -1,0 +1,43 @@
+{% extends "home/base.html" %}
+{% block content %}
+    <h1>Account Users</h1>
+    <table id="users">
+        <tr>
+            <td>Dailienator Username</td>
+            <td>Name</td>
+            <td>Email</td>
+            <td>Catertrax Username</td>
+            <td>Update</td>
+            <td>Delete</td>
+        </tr>
+        {% for accountuser in object_list %}
+            <tr>
+                <td>{{ accountuser.username }}</td>
+                <td>{{ accountuser.first_name }} {{ accountuser.last_name}}</td>
+                <td>{{ accountuser.email }}</td>
+                <td>{{ accountuser.catertrax_username }}</td>
+                <td><a href="/users/{{ accountuser.username }}/update">Edit</a></td>
+                <td><a href="/users/{{accountuser.username}}/delete">Delete</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+    {# .... **Now the pagination section** .... #}
+    <br /> 
+    <div id="list_end">
+        {% if is_paginated %}
+        <span class="page-links">
+            {% if page_obj.has_previous %}
+                <a href="/users?page={{ page_obj.previous_page_number }}">previous</a>
+            {% endif %}
+            <span class="page-current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+            {% if page_obj.has_next %}
+                <a href="/users?page={{ page_obj.next_page_number }}">next</a>
+            {% endif %}
+        </span>
+        <br />
+        {% endif %}
+        <a href="/users/create">New User</a>
+    </div>
+{% endblock content %}

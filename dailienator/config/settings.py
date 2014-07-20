@@ -23,9 +23,19 @@ SECRET_KEY = os.environ.get('DAILIENATOR_SECRET_KEY')
 DEBUG = os.environ.get('DAILIENATOR_DEBUG')
 
 TEMPLATE_DEBUG = os.environ.get('DAILIENATOR_DEBUG')
+TEMPLATE_DIRS = (
+				os.path.join(BASE_DIR, 'templates'),
+				)
 
 ALLOWED_HOSTS = []
 
+#Override the authentication user with my customer model
+AUTH_USER_MODEL = 'sodexoaccounts.AccountUser'
+
+# Keys used by AESFields
+AES_KEYS= {
+	'catertrax_key': os.path.join(BASE_DIR, 'config', 'catertrax.key'),
+}
 
 # Application definition
 
@@ -40,10 +50,12 @@ CORE_APPS = (
 
 THIRD_PARTY_APPS = (
 	'south',
+	'm2secret',
 )
 
 INTERNAL_APPS = (
-	'dailienator.daily',
+	'dailienator.sodexoaccounts',
+	'dailienator.common.aesfield',
 )
 
 INSTALLED_APPS = CORE_APPS + THIRD_PARTY_APPS + INTERNAL_APPS
@@ -90,3 +102,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = (
+	os.path.join(BASE_DIR, 'static'),
+)
+
+STATIC_ROOT = '/var/www/static/dailienator'
+
