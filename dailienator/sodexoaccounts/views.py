@@ -13,6 +13,7 @@ from django.http import Http404
 
 import logging
 
+from dailienator.common.utils.mixins import LoginRequiredMixin
 from models import AccountUser, Account
 from forms import AccountUserCreateForm
 
@@ -20,7 +21,7 @@ from forms import AccountUserCreateForm
 
 logger = logging.getLogger(__name__)
 
-class AccountUserListView(ListView):
+class AccountUserListView(LoginRequiredMixin, ListView):
     model = AccountUser
     fields = ['username', 'first_name', 'last_name']
     paginate_by = 15
@@ -28,7 +29,7 @@ class AccountUserListView(ListView):
     def get_queryset(self):
         return AccountUser.objects.filter(account = self.request.user.account)
 
-class AccountUserCreateView(CreateView):
+class AccountUserCreateView(LoginRequiredMixin, CreateView):
     model = AccountUser
     form_class = AccountUserCreateForm
     success_url=reverse_lazy('accountuser-list')
@@ -39,7 +40,7 @@ class AccountUserCreateView(CreateView):
         kwargs['user'] = self.request.user
         return kwargs
 
-class AccountUserUpdateView(UpdateView):
+class AccountUserUpdateView(LoginRequiredMixin, UpdateView):
     model = AccountUser
     fields = ['username', 'first_name', 'last_name', 'email',
     			'catertrax_username']
@@ -66,7 +67,7 @@ class AccountUserUpdateView(UpdateView):
                           {'verbose_name': queryset.model._meta.verbose_name})
         return obj
 
-class AccountUserDeleteView(DeleteView):
+class AccountUserDeleteView(LoginRequiredMixin, DeleteView):
     model = AccountUser
     success_url = reverse_lazy('accountuser-list') 
 
@@ -90,7 +91,7 @@ class AccountUserDeleteView(DeleteView):
                           {'verbose_name': queryset.model._meta.verbose_name})
         return obj
 
-class AccountUpdateView(UpdateView):
+class AccountUpdateView(LoginRequiredMixin, UpdateView):
     model = Account
     fields = ['name', 'catertrax_url']
     def get_success_url(self):

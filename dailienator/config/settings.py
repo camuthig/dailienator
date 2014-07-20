@@ -71,6 +71,7 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'dailienator.urls'
 
+LOGIN_URL = '/'
 LOGIN_REDIRECT_URL = 'users/'
 LOGOUT_REDIRECT_URL = '/'
 
