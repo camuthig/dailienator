@@ -9,6 +9,7 @@ from dailienator.common.utils.model_helper import unique_slugify
 class AccountUser(AbstractUser):
     catertrax_username = models.CharField(max_length=255, blank=False)
     catertrax_password = AESField(max_length=255, blank=False, aes_key='catertrax_key')
+    account = models.ForeignKey('Account', null=True)
 
     def __unicode__(self):
         return self.username

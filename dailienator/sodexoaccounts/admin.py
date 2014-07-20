@@ -21,7 +21,8 @@ class AccountUserAdmin(UserAdmin):
     
     fieldsets = UserAdmin.fieldsets + (
             ('Catertrax Information', {'fields': ('catertrax_username',
-            										'catertrax_password')}),
+            										'catertrax_password',
+                                                    'account')}),
     )
 
 admin.site.register(AccountUser, AccountUserAdmin)

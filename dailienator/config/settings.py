@@ -71,6 +71,9 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'dailienator.urls'
 
+LOGIN_REDIRECT_URL = 'users/'
+LOGOUT_REDIRECT_URL = '/'
+
 WSGI_APPLICATION = 'dailienator.wsgi.application'
 
 
