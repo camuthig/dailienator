@@ -22,6 +22,10 @@ class AccountUserCreateForm(forms.ModelForm):
                 'last_name', 'email','catertrax_username', 'catertrax_password',
                 'confirm_ct_password']
 
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super(AccountUserCreateForm, self).__init__(*args, **kwargs)
+
     def clean(self):
         cleaned_data = super(AccountUserCreateForm, self).clean()
         ct_password1 = cleaned_data.get("catertrax_password")
@@ -35,6 +39,9 @@ class AccountUserCreateForm(forms.ModelForm):
         # Save the provided password in hashed format
         user = super(AccountUserCreateForm, self).save(commit=False)
         user.set_password(self.cleaned_data["password1"])
+
+        #Set the account ID to be that of the requesting user's.
+        user.account = self.user.account
         if commit:
             user.save()
         return user

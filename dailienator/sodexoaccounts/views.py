@@ -13,51 +13,39 @@ from django.http import Http404
 
 import logging
 
-from models import AccountUser
+from models import AccountUser, Account
 from forms import AccountUserCreateForm
 
 # Create your views here.
 
 logger = logging.getLogger(__name__)
 
-#this was login_user, but I'm just testing
-def home(request):
-    if request.method == 'POST':
-        messages.set_level(request, messages.ERROR)
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            if user.is_active:
-                login(request, user)
-                # Redirect to a success page.
-                print ('Successfully logged in.')
-                logger.debug('Logged in successfully, redirecting to home page.')
-                return redirect('/users/')
-            else:
-                messages.error(request, 'The given user is inactive.')
-                return render(request, "home/login.html")
-                # Return a 'disabled account' error message
-        else:
-            messages.error(request, 'Invalid username/password')
-            return render(request, "home/login.html") 
-    else:
-        return render(request, "home/login.html")
-
 class AccountUserListView(ListView):
     model = AccountUser
     fields = ['username', 'first_name', 'last_name']
     paginate_by = 15
+    
+    def get_queryset(self):
+        return AccountUser.objects.filter(account = self.request.user.account)
 
 class AccountUserCreateView(CreateView):
     model = AccountUser
     form_class = AccountUserCreateForm
     success_url=reverse_lazy('accountuser-list')
 
+    def get_form_kwargs(self):
+        # pass "user" keyword argument with the current user to your form
+        kwargs = super(AccountUserCreateView, self).get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
 class AccountUserUpdateView(UpdateView):
     model = AccountUser
     fields = ['username', 'first_name', 'last_name', 'email',
     			'catertrax_username']
+    
+    def get_queryset(self):
+        return AccountUser.objects.filter(account = self.request.user.account)
     def get_success_url(self):
         return reverse_lazy('accountuser-update', kwargs=self.kwargs)
     def get_object(self, queryset=None):
@@ -68,8 +56,8 @@ class AccountUserUpdateView(UpdateView):
         if param_username is not None:
             queryset = queryset.filter(username=param_username)
         else:
-            raise AttributeError("AccountUser delete view must be called with username."
-                                    % self.__class__.__name__)
+            raise AttributeError("{0}: AccountUser update view must be called with username.".format(
+                                    self.__class__.__name__))
         try:
             # Get the single item from the filtered queryset
             obj = queryset.get()
@@ -81,6 +69,9 @@ class AccountUserUpdateView(UpdateView):
 class AccountUserDeleteView(DeleteView):
     model = AccountUser
     success_url = reverse_lazy('accountuser-list') 
+
+    def get_queryset(self):
+        return AccountUser.objects.filter(account = self.request.user.account)
     def get_object(self, queryset=None):
         if queryset is None:
             queryset = self.get_queryset()
@@ -89,8 +80,8 @@ class AccountUserDeleteView(DeleteView):
         if param_username is not None:
             queryset = queryset.filter(username=param_username)
         else:
-            raise AttributeError("AccountUser delete view must be called with username."
-                                    % self.__class__.__name__)
+            raise AttributeError("{0}: AccountUser delete view must be called with username.".format(
+                                    self.__class__.__name__))
         try:
             # Get the single item from the filtered queryset
             obj = queryset.get()
@@ -98,3 +89,17 @@ class AccountUserDeleteView(DeleteView):
             raise Http404(("No %(verbose_name)s found matching the query") %
                           {'verbose_name': queryset.model._meta.verbose_name})
         return obj
+
+class AccountUpdateView(UpdateView):
+    model = Account
+    fields = ['name', 'catertrax_url']
+    def get_success_url(self):
+        return reverse_lazy('account-update')
+
+    def get_object(self, queryset=None):
+        account = self.request.user.account
+        if account is not None:
+            return account
+        else:
+            raise Http404("{0}: Account update requires an account user in the request.".format(
+                                    self.__class__.__name__))
