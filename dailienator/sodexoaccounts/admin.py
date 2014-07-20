@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django import forms
-from dailienator.sodexoaccounts.models import AccountUser
+from dailienator.sodexoaccounts.models import AccountUser, Account
 
 class AccountUserChangeForm(UserChangeForm):
     class Meta:
@@ -25,3 +25,8 @@ class AccountUserAdmin(UserAdmin):
     )
 
 admin.site.register(AccountUser, AccountUserAdmin)
+
+class AccountAdmin(admin.ModelAdmin):
+    pass
+
+admin.site.register(Account, AccountAdmin)
