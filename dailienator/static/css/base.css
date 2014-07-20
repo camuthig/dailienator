@@ -62,7 +62,8 @@ li.error{
 	}
 
 #mainpage {
-	width:988px;
+	/*width:988px;*/
+  width:75%;
 	position: relative;
 	top:100px;
 	margin-left:auto;
@@ -88,6 +89,32 @@ li.error{
 	text-align:left;
 	font-weight:normal;
 	vertical-align:middle;
+}
+
+div#list_end {
+  margin-left: auto;
+  margin-right: auto;
+  width:100%;
+  text-align:center;
+}
+
+table#users {
+  width:100%;
+  border-collapse:separate;
+  white-space: nowrap;
+  border:1;
+  border-spacing:1;
+  text-align:left;
+  font-weight:normal;
+  vertical-align:middle;
+}
+
+#users td{
+  width:20%;
+}
+
+#users * tr:nth-child(even){
+  background-color: #C7C4BF
 }
 
 #cssmenu{

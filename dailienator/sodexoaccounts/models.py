@@ -8,3 +8,6 @@ from dailienator.common.aesfield.field import AESField
 class AccountUser(AbstractUser):
     catertrax_username = models.CharField(max_length=255, blank=False)
     catertrax_password = AESField(max_length=255, blank=False, aes_key='catertrax_key')
+
+    def __unicode__(self):
+        return self.username
