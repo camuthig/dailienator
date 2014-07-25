@@ -21,7 +21,6 @@ class AccountUserAdmin(UserAdmin):
     
     fieldsets = UserAdmin.fieldsets + (
             ('Catertrax Information', {'fields': ('catertrax_username',
-            										'catertrax_password',
                                                     'account')}),
     )
 

@@ -18,6 +18,9 @@
 			   <li class="logo"><a class="logo" href="/">Dailienator</a></li>
 			   <li><a href="/account/update"><span>Account</span></a></li>
                <li><a href="/users"><span>Users</span></a></li>
+               {% if user.is_active and user.is_staff %}
+               <li><a href="/admin"><span>Admin</span></a></li>
+               {% endif %}
 			   <li class="last"><a href="/daily/create"><span>Daily</span></a></li>
 			   <li class="logout"><a href="/logout">Logout</a></li>
 			</ul>
