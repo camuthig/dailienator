@@ -1,8 +1,14 @@
+#First use apt-get to install the below packages
+# swig 
+# libssl-dev
+# python-m2crypto
+# python-lxml
+
 Django==1.6.5
-#M2Crypto is a requirement for the system, however it requires swig to build it
-#This should be handled separately for all virtualenvs.
-#M2Crypto==0.22.3
 South==0.8.4
 argparse==1.2.1
+beautifulsoup4==4.3.2
 m2secret==0.1.1
+mechanize==0.2.5
 wsgiref==0.1.2
+XlsxWriter==0.5.6
