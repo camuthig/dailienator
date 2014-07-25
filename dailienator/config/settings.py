@@ -55,6 +55,7 @@ THIRD_PARTY_APPS = (
 
 INTERNAL_APPS = (
 	'dailienator.sodexoaccounts',
+    'dailienator.daily',
 	'dailienator.common.aesfield',
 )
 
@@ -62,12 +63,14 @@ INSTALLED_APPS = CORE_APPS + THIRD_PARTY_APPS + INTERNAL_APPS
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
+    "django.contrib.messages.middleware.MessageMiddleware",
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
+
+MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 ROOT_URLCONF = 'dailienator.urls'
 
@@ -113,3 +116,21 @@ STATICFILES_DIRS = (
 
 STATIC_ROOT = '/var/www/static/dailienator'
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logging', 'output.log'),
+        },
+    },
+    'loggers':{
+        'django.request': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propogate': True,
+        }
+    }
+}

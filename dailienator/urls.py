@@ -1,6 +1,7 @@
 from django.conf.urls import patterns, include, url
 from sodexoaccounts.views import AccountUserListView, AccountUserCreateView, AccountUserUpdateView, AccountUserDeleteView, AccountUpdateView
 from views import Login, Logout
+from daily.views import DailyCreateView
 
 from django.core.urlresolvers import reverse_lazy
 from django.contrib import admin
@@ -25,4 +26,7 @@ urlpatterns = patterns('',
 
     #Sodexo Account Views
     url(r'^account/update', AccountUpdateView.as_view(), name='account-update'), 
+
+    #Daily Views
+    url(r'^daily/create$', DailyCreateView.as_view(), name='daily-create'),
 )

@@ -1,0 +1,28 @@
+{% extends "home/base.html" %}
+{% block head_content %}
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+	<!--<script src="http://code.jquery.com/jquery-1.9.1.js"></script>-->
+	<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+	<script>
+		$(document).ready(function() {
+			$('.datepicker').datepicker();
+		});
+	</script>
+{% endblock %}
+	
+
+	{% block content %}
+	{% if messages %}
+	<ul class="messages">
+		{% for message in messages %}
+		<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+		{% endfor %}
+	</ul>
+	{% endif %}
+	<form action="/daily/create" method="post">{% csrf_token %}
+		<table>
+		{{ form.as_table }}
+		</table>
+	<input type="submit" value="Submit" />
+	</form>
+	{% endblock %}
