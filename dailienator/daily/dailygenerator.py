@@ -12,6 +12,7 @@ import os
 from django.conf import settings
 from django.core.mail import *
 import logging
+import traceback
 import base64
 from time import strftime
 
@@ -31,7 +32,7 @@ specialColNum = 8
 leadColNum = 9
 vehicleColNum = 10
 
-logger = logging.getLogger('django.request')
+logger = logging.getLogger(__name__)
 	
 class RowData(object):
 	"""A class representing the data for a single row in the target Excel 
@@ -668,15 +669,16 @@ class DailyGenerator():
 			as well as the date. 
 		'''
 		try:
-			parsedDate = date.strftime('%m/%d/%Y')
+			parsedDate = date
 			user_account = user.account
 			
 			logger.info('Generating daily for account ' + user_account.name + 
 						' and date ' + parsedDate);
 			startNormal = time.time()
-			data = self.retrieveSheetData(user.catertrax_user, 
-								base64.decodestring(user.catertrax_password), 
-								parsedDate, user_account.site)
+			logger.debug('The password for catertrax is: ' + user.catertrax_password)
+			data = self.retrieveSheetData(user.catertrax_username, 
+								user.catertrax_password, 
+								parsedDate, user_account.catertrax_url)
 			
 			
 			#The input data is the raw information received from Catertrax
@@ -711,7 +713,7 @@ class DailyGenerator():
 			#logger.debug('Time for kitchen retrieval = ' + str(totalKitchen))
 			
 		except Exception as e:
-			logger.error(str(e))
+			logger.error(traceback.format_exc())
 			raise Exception(str(e))
 		
 		logger.debug('Completing the dailienator process')
