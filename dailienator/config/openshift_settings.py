@@ -20,9 +20,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = os.environ.get('DAILIENATOR_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = false
+DEBUG = os.environ.get('DEBUG')
 
-TEMPLATE_DEBUG = false
+TEMPLATE_DEBUG = os.environ.get('DEBUG')
 TEMPLATE_DIRS = (
 				os.path.join(BASE_DIR, 'templates'),
 				)
@@ -114,7 +114,7 @@ STATICFILES_DIRS = (
 	os.path.join(BASE_DIR, 'static'),
 )
 
-STATIC_ROOT = '/var/www/static/dailienator'
+STATIC_ROOT = os.path.join(os.environ.get('OPENSHIFT_REPO_DIR'), 'wsgi', 'static')
 
 LOGGING = {
     'version': 1,
