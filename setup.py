@@ -6,5 +6,5 @@ setup(name='Dailienator',
       author='Chris Muthig',
       author_email='camuthig@gmail.com',
       url='http://dailienator-kringle.rhcloud.com/',
-      install_requires=['Django>=1.6', 'libssl-dev', 'python-m2crypto', 'python-lxml'],
+#      install_requires=['Django>=1.6'],
      )

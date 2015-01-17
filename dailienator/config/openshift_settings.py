@@ -50,7 +50,7 @@ CORE_APPS = (
 
 THIRD_PARTY_APPS = (
 	'south',
-	'm2secret',
+	'Crypto',
 )
 
 INTERNAL_APPS = (
