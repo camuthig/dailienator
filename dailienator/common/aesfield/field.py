@@ -3,7 +3,8 @@ from django.db import models
 from django.db import connection
 from django.utils.importlib import import_module
 
-from m2secret import Secret
+from Crypto.Cipher import AES
+from Crypto import Random
 
 
 class EncryptedField(Exception):
@@ -40,20 +41,26 @@ class AESField(models.TextField):
             return self.aes_prefix + self._encrypt(value)
         return value
 
-    def _encrypt(self, value):
-        secret = Secret()
-        secret.encrypt(str(value), self.get_aes_key())
-        return secret.serialize()
+    BS = 16
+    pad = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS)
+    unpad = lambda s : s[:-ord(s[len(s)-1:])]
+
+    def _encrypt( self, value ):
+        value = pad(value)
+        iv = Random.new().read( AES.block_size )
+        cipher = AES.new( self.get_aes_key(), AES.MODE_CBC, iv )
+        return base64.b64encode( iv + cipher.encrypt( value ) )
 
     def to_python(self, value):
         if not value or not value.startswith(self.aes_prefix):
             return value
         return self._decrypt(value[len(self.aes_prefix):])
 
-    def _decrypt(self, value):
-        secret = Secret()
-        secret.deserialize(str(value))
-        return secret.decrypt(self.get_aes_key())
+    def _decrypt( self, value ):
+        value = base64.b64decode(value)
+        iv = value[:16]
+        cipher = AES.new(self.key, AES.MODE_CBC, iv )
+        return unpad(cipher.decrypt( value[16:] ))
 
 
 # South support.
