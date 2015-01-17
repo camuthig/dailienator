@@ -64,7 +64,7 @@ class AESField(models.TextField):
     def _decrypt( self, value ):
         value = base64.b64decode(value)
         iv = value[:16]
-        cipher = AES.new(self.get_aes_key, AES.MODE_CBC, iv )
+        cipher = AES.new(self.get_aes_key(), AES.MODE_CBC, iv )
         return self._unpad(cipher.decrypt( value[16:] ))
 
 
