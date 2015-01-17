@@ -34,7 +34,7 @@ AUTH_USER_MODEL = 'sodexoaccounts.AccountUser'
 
 # Keys used by AESFields
 AES_KEYS= {
-	'catertrax_key': os.path.join(BASE_DIR, 'config', 'catertrax.key'),
+	'catertrax_key': os.path.join(os.environ.get('OPENSHIFT_LOG_DIR'), 'catertrax.key'),
 }
 
 # Application definition
