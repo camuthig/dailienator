@@ -20,10 +20,10 @@
             </tr>
             {% for accountuser in object_list %}
                 <tr>
-                    <td>{{ accountuser.username }}</td>
-                    <td>{{ accountuser.first_name }} {{ accountuser.last_name}}</td>
-                    <td>{{ accountuser.email }}</td>
-                    <td>{{ accountuser.catertrax_username }}</td>
+                    <td class="text-center">{{ accountuser.username }}</td>
+                    <td class="text-center">{{ accountuser.first_name }} {{ accountuser.last_name}}</td>
+                    <td class="text-center">{{ accountuser.email }}</td>
+                    <td class="text-center">{{ accountuser.catertrax_username }}</td>
                     <td class="text-center"><a href="/users/{{ accountuser.username }}/update">Edit</a></td>
                     <td class="text-center"><a href="/users/{{accountuser.username}}/delete">Delete</a></td>
                 </tr>

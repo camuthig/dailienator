@@ -25,13 +25,14 @@ class AccountUserListView(LoginRequiredMixin, ListView):
     model = AccountUser
     fields = ['username', 'first_name', 'last_name']
     paginate_by = 15
-    
+
     def get_queryset(self):
         return AccountUser.objects.filter(account = self.request.user.account)
 
 class AccountUserCreateView(LoginRequiredMixin, CreateView):
     model = AccountUser
     form_class = AccountUserCreateForm
+    template_name = "sodexoaccounts/accountuser_create_form.html"
     success_url=reverse_lazy('accountuser-list')
 
     def get_form_kwargs(self):
@@ -42,9 +43,10 @@ class AccountUserCreateView(LoginRequiredMixin, CreateView):
 
 class AccountUserUpdateView(LoginRequiredMixin, UpdateView):
     model = AccountUser
+    template_name = "sodexoaccounts/accountuser_update_form.html"
     fields = ['username', 'first_name', 'last_name', 'email',
     			'catertrax_username']
-    
+
     def get_queryset(self):
         return AccountUser.objects.filter(account = self.request.user.account)
     def get_success_url(self):
@@ -69,7 +71,7 @@ class AccountUserUpdateView(LoginRequiredMixin, UpdateView):
 
 class AccountUserDeleteView(LoginRequiredMixin, DeleteView):
     model = AccountUser
-    success_url = reverse_lazy('accountuser-list') 
+    success_url = reverse_lazy('accountuser-list')
 
     def get_queryset(self):
         return AccountUser.objects.filter(account = self.request.user.account)
