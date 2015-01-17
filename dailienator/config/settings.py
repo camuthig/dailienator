@@ -40,7 +40,7 @@ AES_KEYS= {
 # Application definition
 
 CORE_APPS = (
-	'django.contrib.admin',
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -54,9 +54,9 @@ THIRD_PARTY_APPS = (
 )
 
 INTERNAL_APPS = (
-	'dailienator.sodexoaccounts',
+    'dailienator.sodexoaccounts',
     'dailienator.daily',
-	'dailienator.common.aesfield',
+    'dailienator.common.aesfield',
 )
 
 INSTALLED_APPS = CORE_APPS + THIRD_PARTY_APPS + INTERNAL_APPS
