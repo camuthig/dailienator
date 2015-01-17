@@ -13,19 +13,19 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
-    
+
     #Home
     url(r'^$', Login.as_view(), name='login'),
     url(r'^logout$', Logout.as_view(), name='logout'),
-    
+
     #Sodexo AccountUser Views
     url(r'^users/$', AccountUserListView.as_view(), name='accountuser-list'),
     url(r'^users/create$', AccountUserCreateView.as_view(), name='accountuser-create'),
-    url(r'^users/(?P<username>\w+)/update', AccountUserUpdateView.as_view(), name='accountuser-update'), 
-    url(r'^users/(?P<username>\w+)/delete', AccountUserDeleteView.as_view(), name='accountuser-delete'), 
+    url(r'^users/(?P<username>[\w|.|@|+|-]+)/update', AccountUserUpdateView.as_view(), name='accountuser-update'),
+    url(r'^users/(?P<username>[\w|.|@|+|-]+)/delete', AccountUserDeleteView.as_view(), name='accountuser-delete'),
 
     #Sodexo Account Views
-    url(r'^account/update', AccountUpdateView.as_view(), name='account-update'), 
+    url(r'^account/update', AccountUpdateView.as_view(), name='account-update'),
 
     #Daily Views
     url(r'^daily/create$', DailyCreateView.as_view(), name='daily-create'),
