@@ -7,11 +7,11 @@ export PYTHON_EGG_CACHE=${OPENSHIFT_HOME_DIR}python/virtenv/lib/python2.7/site-p
 echo "Preparing the openshift_settings.py file for use"
 cp "$OPENSHIFT_REPO_DIR"dailienator/config/openshift_settings.py "$OPENSHIFT_REPO_DIR"dailienator/config/settings.py
  
-echo "Executing 'python ${OPENSHIFT_REPO_DIR}dailienator/manage.py syncdb --noinput'"
-python "$OPENSHIFT_REPO_DIR"dailienator/manage.py syncdb --noinput
+echo "Executing 'python ${OPENSHIFT_REPO_DIR}manage.py syncdb --noinput'"
+python "$OPENSHIFT_REPO_DIR"manage.py syncdb --noinput
 
-echo "Executing 'python ${OPENSHIFT_REPO_DIR}dailienator/manage.py migrate'"
-python "$OPENSHIFT_REPO_DIR"dailienator/manage.py migrate
+echo "Executing 'python ${OPENSHIFT_REPO_DIR}manage.py migrate'"
+python "$OPENSHIFT_REPO_DIR"manage.py migrate
 
 echo "Creating wsgi directory at '${OPENSHIFT_REPO_DIR}'"
 mkdir -p "$OPENSHIFT_REPO_DIR"wsgi/static
@@ -20,5 +20,5 @@ mkdir -p "$OPENSHIFT_REPO_DIR"wsgi/media
 echo "Adding .htaccess to '${OPENSHIFT_REPO_DIR}wsgi'"
 cp ${OPENSHIFT_REPO_DIR}.openshift/action_hooks/htaccess ${OPENSHIFT_REPO_DIR}wsgi/.htaccess
  
-echo "Executing 'python ${OPENSHIFT_REPO_DIR}dailienator/manage.py collectstatic --noinput -v0'"
-python "$OPENSHIFT_REPO_DIR"dailienator/manage.py collectstatic --noinput -v0
+echo "Executing 'python ${OPENSHIFT_REPO_DIR}manage.py collectstatic --noinput -v0'"
+python "$OPENSHIFT_REPO_DIR"manage.py collectstatic --noinput -v0
