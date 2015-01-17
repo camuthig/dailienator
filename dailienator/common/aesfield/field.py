@@ -5,6 +5,7 @@ from django.utils.importlib import import_module
 
 from Crypto.Cipher import AES
 from Crypto import Random
+import base64
 
 
 class EncryptedField(Exception):
@@ -17,6 +18,7 @@ class AESField(models.TextField):
     __metaclass__ = models.SubfieldBase
 
     def __init__(self, *args, **kwargs):
+        self.bs = 32
         self.aes_prefix = kwargs.pop('aes_prefix', 'aes:')
         if not self.aes_prefix:
             raise ValueError('AES Prefix cannot be null.')
@@ -41,12 +43,15 @@ class AESField(models.TextField):
             return self.aes_prefix + self._encrypt(value)
         return value
 
-    BS = 16
-    pad = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS)
-    unpad = lambda s : s[:-ord(s[len(s)-1:])]
+    def _pad(self, s):
+        return s + (self.bs - len(s) % self.bs) * chr(self.bs - len(s) % self.bs)
+
+    @staticmethod
+    def _unpad(s):
+        return s[:-ord(s[len(s)-1:])]
 
     def _encrypt( self, value ):
-        value = pad(value)
+        value = self._pad(value)
         iv = Random.new().read( AES.block_size )
         cipher = AES.new( self.get_aes_key(), AES.MODE_CBC, iv )
         return base64.b64encode( iv + cipher.encrypt( value ) )
@@ -59,8 +64,8 @@ class AESField(models.TextField):
     def _decrypt( self, value ):
         value = base64.b64decode(value)
         iv = value[:16]
-        cipher = AES.new(self.key, AES.MODE_CBC, iv )
-        return unpad(cipher.decrypt( value[16:] ))
+        cipher = AES.new(self.get_aes_key, AES.MODE_CBC, iv )
+        return self._unpad(cipher.decrypt( value[16:] ))
 
 
 # South support.
