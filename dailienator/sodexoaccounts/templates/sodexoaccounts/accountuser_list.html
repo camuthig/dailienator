@@ -1,43 +1,44 @@
 {% extends "home/base.html" %}
 {% block content %}
-    <h1>Account Users</h1>
-    <table id="users">
-        <tr>
-            <td>Dailienator Username</td>
-            <td>Name</td>
-            <td>Email</td>
-            <td>Catertrax Username</td>
-            <td>Update</td>
-            <td>Delete</td>
-        </tr>
-        {% for accountuser in object_list %}
+
+    <div class="container">
+        <div class="row">
+            <div class=".col-md-6 .col-md-offset-3">
+                <h1>Account Users</h1>
+                <a class="btn btn-primary" href="/users/create">New User</a>
+            </div>
+        </div>
+        <div />
+        <table class="table table-hover table-responsive">
             <tr>
-                <td>{{ accountuser.username }}</td>
-                <td>{{ accountuser.first_name }} {{ accountuser.last_name}}</td>
-                <td>{{ accountuser.email }}</td>
-                <td>{{ accountuser.catertrax_username }}</td>
-                <td><a href="/users/{{ accountuser.username }}/update">Edit</a></td>
-                <td><a href="/users/{{accountuser.username}}/delete">Delete</a></td>
+                <td class="text-center"><strong>Dailienator Username</strong></td>
+                <td class="text-center"><strong>Name</strong></td>
+                <td class="text-center"><strong>Email</strong></td>
+                <td class="text-center"><strong>Catertrax Username</strong></td>
+                <td class="text-center"><strong>Update</strong></td>
+                <td class="text-center"><strong>Delete</strong></td>
             </tr>
-        {% endfor %}
-    </table>
-    {# .... **Now the pagination section** .... #}
-    <br /> 
-    <div id="list_end">
+            {% for accountuser in object_list %}
+                <tr>
+                    <td>{{ accountuser.username }}</td>
+                    <td>{{ accountuser.first_name }} {{ accountuser.last_name}}</td>
+                    <td>{{ accountuser.email }}</td>
+                    <td>{{ accountuser.catertrax_username }}</td>
+                    <td class="text-center"><a href="/users/{{ accountuser.username }}/update">Edit</a></td>
+                    <td class="text-center"><a href="/users/{{accountuser.username}}/delete">Delete</a></td>
+                </tr>
+            {% endfor %}
+        </table>
+
         {% if is_paginated %}
-        <span class="page-links">
+        <nav>
             {% if page_obj.has_previous %}
-                <a href="/users?page={{ page_obj.previous_page_number }}">previous</a>
+                <li><a href="/users?page={{ page_obj.previous_page_number }}">Previous</a></li>
             {% endif %}
-            <span class="page-current">
-                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-            </span>
             {% if page_obj.has_next %}
-                <a href="/users?page={{ page_obj.next_page_number }}">next</a>
+                <li><a href="/users?page={{ page_obj.next_page_number }}">Next</a></li>
             {% endif %}
-        </span>
-        <br />
+        </nav>
         {% endif %}
-        <a href="/users/create">New User</a>
     </div>
 {% endblock content %}

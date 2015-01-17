@@ -2,41 +2,67 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="{% static "css/base.css" %}" />
     <title>{% block title %}{% endblock %}</title>
-    <script type="text/javascript" src="{% static "js/jquery-1.11.1.js" %}"></script>
     <!--[if IE]>
         <script type="text/javascript" src="{% static "js/selectivizr-min.js" %}"></script>
         <script type="text/javascript" src="{% static "js/html5shiv.js" %}"></script>
     <![endif]-->
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
     {% block head_content %}{% endblock %}
 </head>
 <body>
-	<div id="pagewrap">
-		<div id="cssmenu">
-			<ul>
-			   <li class="logo"><a class="logo" href="/">Dailienator</a></li>
-			   <li><a href="/account/update"><span>Account</span></a></li>
-               <li><a href="/users"><span>Users</span></a></li>
-               {% if user.is_active and user.is_staff %}
-               <li><a href="/admin"><span>Admin</span></a></li>
-               {% endif %}
-			   <li class="last"><a href="/daily/create"><span>Daily</span></a></li>
-			   <li class="logout"><a href="/logout">Logout</a></li>
-			</ul>
-		</div>
-		<div id="mainpage">
-			<div id="container">
-            	{% block content %}{% endblock %}
-			</div>
-		</div>
-	</div>
-	<footer id="sitefooter">
-		<div id='copyfloat'>
-            <div id="copyright">
-                <p>Copyright Kringle Software</p>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">Dailienator</a>
             </div>
+            <div id="navbar" class="collapse navbar-collapse">
+                {% if user.is_authenticated %}
+                    <ul class="nav navbar-nav">
+                        <li><a href="/account/update">Account</a></li>
+                        <li><a href="/users">Users</a></li>
+                        {% if user.is_active and user.is_staff %}
+                            <li><a href="/admin">Admin</a></li>
+                        {% endif %}
+                        <li><a href="/daily/create">Daily</a></li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="/logout">Logout</a></li>
+                    </ul>
+                {% endif %}
+            </div><!--/.nav-collapse -->
         </div>
-	</footer>
+    </nav>
+
+    {% block content %}{% endblock %}
+
+
+    <div class="footer navbar-fixed-bottom">
+        <footer>
+            <p>&copy; Kringle Software</p>
+        </footer>
+	</div>
+
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
 </body>
 </html>
