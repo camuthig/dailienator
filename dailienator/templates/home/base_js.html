@@ -41,6 +41,7 @@
                     <ul class="nav navbar-nav">
                         <li><a href="/account/update">Account</a></li>
                         <li><a href="/users">Users</a></li>
+                        <li><a href="/users/{{ user.username }}/update">Profile</a></li>
                         {% if user.is_active and user.is_staff %}
                             <li><a href="/admin">Admin</a></li>
                         {% endif %}
