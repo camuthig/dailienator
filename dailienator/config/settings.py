@@ -51,6 +51,7 @@ CORE_APPS = (
 THIRD_PARTY_APPS = (
 	'south',
 	'Crypto',
+    'bootstrap3_datetime',
 )
 
 INTERNAL_APPS = (

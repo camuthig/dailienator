@@ -1,7 +1,7 @@
-from functools import partial
 from django import forms
-
-DateInput = partial(forms.DateInput, {'class': 'datepicker'})
+from bootstrap3_datetime.widgets import DateTimePicker
 
 class DailyCreateForm(forms.Form):
-    date = forms.DateField(widget=DateInput())
+    date = forms.DateField(
+        widget=DateTimePicker(options={"format": "MM/DD/YYYY",
+                                       "pickTime": False}))
