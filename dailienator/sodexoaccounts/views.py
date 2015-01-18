@@ -95,6 +95,7 @@ class AccountUserDeleteView(LoginRequiredMixin, DeleteView):
 
 class AccountUpdateView(LoginRequiredMixin, UpdateView):
     model = Account
+    template_name = "sodexoaccounts/account_update_form.html"
     fields = ['name', 'catertrax_url']
     def get_success_url(self):
         return reverse_lazy('account-update')
