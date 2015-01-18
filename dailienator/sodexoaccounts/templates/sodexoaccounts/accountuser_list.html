@@ -24,8 +24,16 @@
                     <td class="text-center">{{ accountuser.first_name }} {{ accountuser.last_name}}</td>
                     <td class="text-center">{{ accountuser.email }}</td>
                     <td class="text-center">{{ accountuser.catertrax_username }}</td>
-                    <td class="text-center"><a href="/users/{{ accountuser.username }}/update">Edit</a></td>
-                    <td class="text-center"><a href="/users/{{accountuser.username}}/delete">Delete</a></td>
+                    <td class="text-center">
+                        <a type="button" class="btn btn-default btn-sm" aria-label="Edit" href="/users/{{ accountuser.username }}/update">
+                            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                        </a>
+                    </td>
+                    <td class="text-center">
+                        <a type="button" class="btn btn-default btn-sm" aria-label="Delete" href="/users/{{accountuser.username}}/delete">
+                            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+                        </a>
+                    </td>
                 </tr>
             {% endfor %}
         </table>
