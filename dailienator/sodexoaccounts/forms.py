@@ -13,8 +13,10 @@ class AccountUserCreateForm(forms.ModelForm):
 
     confirm_ct_password = forms.CharField(label="Confirm Catertrax Password",
                                             widget=forms.PasswordInput,
-                                            required=True,)
-    catertrax_password = forms.CharField(widget=forms.PasswordInput, required=True)
+                                            required=False,)
+    catertrax_password = forms.CharField(widget=forms.PasswordInput, required=False)
+
+    catertrax_username = forms.CharField(required=False)
 
     class Meta:
         model = AccountUser
@@ -45,6 +47,15 @@ class AccountUserCreateForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
+class AccountUserUpdateForm(forms.ModelForm):
+    catertrax_username = forms.CharField(required=False)
+
+    class Meta:
+        model = AccountUser
+        fields = ['username', 'first_name', 'last_name', 'email',
+                'catertrax_username']
+
 
 class AccountUserCaterTraxPasswordUpdateForm(forms.ModelForm):
     confirm_ct_password = forms.CharField(label="Confirm Catertrax Password",

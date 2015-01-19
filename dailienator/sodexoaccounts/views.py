@@ -15,7 +15,7 @@ import logging
 
 from dailienator.common.utils.mixins import LoginRequiredMixin
 from models import AccountUser, Account
-from forms import AccountUserCreateForm, AccountUserCaterTraxPasswordUpdateForm
+from forms import AccountUserCreateForm, AccountUserCaterTraxPasswordUpdateForm, AccountUserUpdateForm
 
 # Create your views here.
 
@@ -43,14 +43,12 @@ class AccountUserCreateView(LoginRequiredMixin, CreateView):
 
 class AccountUserUpdateView(LoginRequiredMixin, UpdateView):
     model = AccountUser
+    form_class = AccountUserUpdateForm
     template_name = "sodexoaccounts/accountuser_update_form.html"
-    fields = ['username', 'first_name', 'last_name', 'email',
-    			'catertrax_username']
 
-    def get_queryset(self):
-        return AccountUser.objects.filter(account = self.request.user.account)
     def get_success_url(self):
         return reverse_lazy('accountuser-update', kwargs=self.kwargs)
+
     def get_object(self, queryset=None):
         if queryset is None:
             queryset = self.get_queryset()
