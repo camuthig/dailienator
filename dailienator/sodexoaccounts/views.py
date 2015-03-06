@@ -49,6 +49,13 @@ class AccountUserUpdateView(LoginRequiredMixin, UpdateView):
     def get_success_url(self):
         return reverse_lazy('accountuser-update', kwargs=self.kwargs)
 
+    def get_template_names(self):
+        if self.request.user.username == self.kwargs.get('username'):
+            return ["sodexoaccounts/accountuser_update_own_form.html"]
+        else:
+            return ["sodexoaccounts/accountuser_update_form.html"]
+
+
     def get_object(self, queryset=None):
         if queryset is None:
             queryset = self.get_queryset()
