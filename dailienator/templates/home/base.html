@@ -12,6 +12,19 @@
     <!-- Flying Fig Fonts -->
     <script src="//use.typekit.net/eip2trv.js"></script>
     <script>try{Typekit.load();}catch(e){}</script>
+    <script type="text/javascript">
+        (function() {
+            var link_element = document.createElement("link"),
+                s = document.getElementsByTagName("script")[0];
+            if (window.location.protocol !== "http:" && window.location.protocol !== "https:") {
+                link_element.href = "http:";
+            }
+            link_element.href += "//fonts.googleapis.com/css?family=Didact+Gothic:400";
+            link_element.rel = "stylesheet";
+            link_element.type = "text/css";
+            s.parentNode.insertBefore(link_element, s);
+        })();
+    </script>
 
 
     <title>{% block title %}{% endblock %}</title>
