@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, include, url
 from sodexoaccounts.views import AccountUserListView, AccountUserCreateView, AccountUserUpdateView, AccountUserDeleteView, AccountUpdateView, AccountUserCaterTraxPasswordUpdateView
-from views import Login, Logout
+from views import Login, Logout, PasswordUpdateView
 from daily.views import DailyCreateView
 
 from django.core.urlresolvers import reverse_lazy
@@ -22,7 +22,7 @@ urlpatterns = patterns('',
     #Sodexo AccountUser Views
     url(r'^users/$', AccountUserListView.as_view(), name='accountuser-list'),
     url(r'^users/create$', AccountUserCreateView.as_view(), name='accountuser-create'),
-    url(r'^users/password/update$', password_change, {'template_name': 'administration/password_update.html', 'post_change_redirect': '/'}),
+    url(r'^users/password/update$', PasswordUpdateView.as_view(), name='password-update'),
     url(r'^users/catertrax_password/update', AccountUserCaterTraxPasswordUpdateView.as_view(), name='accountuser-catertrax-password-update'),
     url(r'^users/(?P<username>[\w|.|@|+|-]+)/update', AccountUserUpdateView.as_view(), name='accountuser-update'),
     url(r'^users/(?P<username>[\w|.|@|+|-]+)/delete', AccountUserDeleteView.as_view(), name='accountuser-delete'),
