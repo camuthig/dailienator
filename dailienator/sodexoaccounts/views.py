@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 
+from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 
@@ -29,11 +30,12 @@ class AccountUserListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return AccountUser.objects.filter(account = self.request.user.account)
 
-class AccountUserCreateView(LoginRequiredMixin, CreateView):
+class AccountUserCreateView(SuccessMessageMixin, LoginRequiredMixin, CreateView):
     model = AccountUser
     form_class = AccountUserCreateForm
     template_name = "sodexoaccounts/accountuser_create_form.html"
     success_url=reverse_lazy('accountuser-list')
+    success_message = "%(username)s successfully created"
 
     def get_form_kwargs(self):
         # pass "user" keyword argument with the current user to your form
@@ -41,9 +43,10 @@ class AccountUserCreateView(LoginRequiredMixin, CreateView):
         kwargs['user'] = self.request.user
         return kwargs
 
-class AccountUserUpdateView(LoginRequiredMixin, UpdateView):
+class AccountUserUpdateView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     model = AccountUser
     form_class = AccountUserUpdateForm
+    success_message = "User information successfully updated"
     template_name = "sodexoaccounts/accountuser_update_form.html"
 
     def get_success_url(self):
@@ -74,10 +77,11 @@ class AccountUserUpdateView(LoginRequiredMixin, UpdateView):
                           {'verbose_name': queryset.model._meta.verbose_name})
         return obj
 
-class AccountUserCaterTraxPasswordUpdateView(LoginRequiredMixin, UpdateView):
+class AccountUserCaterTraxPasswordUpdateView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     model = AccountUser
     form_class = AccountUserCaterTraxPasswordUpdateForm
     template_name = "sodexoaccounts/catertrax_password_update.html"
+    success_message = "Catertrax password updated"
 
     def get_queryset(self):
         return AccountUser.objects.filter(account = self.request.user.account)
@@ -96,8 +100,13 @@ class AccountUserDeleteView(LoginRequiredMixin, DeleteView):
     model = AccountUser
     success_url = reverse_lazy('accountuser-list')
 
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, self.kwargs.get('username') + " successfully deleted")
+        return super(AccountUserDeleteView, self).delete(request, *args, **kwargs)
+
     def get_queryset(self):
         return AccountUser.objects.filter(account = self.request.user.account)
+
     def get_object(self, queryset=None):
         if queryset is None:
             queryset = self.get_queryset()
