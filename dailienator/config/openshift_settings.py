@@ -27,7 +27,7 @@ TEMPLATE_DIRS = (
 				os.path.join(BASE_DIR, 'templates'),
 				)
 
-ALLOWED_HOSTS = ['dailienator-kringle.rhcloud']
+ALLOWED_HOSTS = ['dailienator-kringle.rhcloud.com']
 
 #Override the authentication user with my customer model
 AUTH_USER_MODEL = 'sodexoaccounts.AccountUser'
