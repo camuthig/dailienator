@@ -11,14 +11,21 @@ class AccountUserChangeForm(UserChangeForm):
         widgets = {'catertrax_password': forms.PasswordInput(),}
 
 class AccountUserCreationForm(UserCreationForm):
-    class Meta:
-        model = get_user_model()
-        widgets = {'catertrax_password': forms.PasswordInput(),}
+    class Meta(UserCreationForm.Meta):
+        model = AccountUser
+
+    def clean_username(self):
+        username = self.cleaned_data['username']
+        try:
+            AccountUser.objects.get(username=username)
+        except AccountUser.DoesNotExist:
+            return username
+        raise forms.ValidationError(self.error_messages['duplicate_username'])
 
 class AccountUserAdmin(UserAdmin):
     form = AccountUserChangeForm
     add_form = AccountUserCreationForm
-    
+
     fieldsets = UserAdmin.fieldsets + (
             ('Catertrax Information', {'fields': ('catertrax_username',
                                                     'account')}),
