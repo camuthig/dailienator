@@ -27,7 +27,7 @@ TEMPLATE_DIRS = (
 				os.path.join(BASE_DIR, 'templates'),
 				)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['dailienator-kringle.rhcloud']
 
 #Override the authentication user with my customer model
 AUTH_USER_MODEL = 'sodexoaccounts.AccountUser'
@@ -36,6 +36,13 @@ AUTH_USER_MODEL = 'sodexoaccounts.AccountUser'
 AES_KEYS= {
 	'catertrax_key': os.path.join(os.environ.get('OPENSHIFT_DATA_DIR'), 'catertrax.key'),
 }
+
+# Email credentails
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'dailienator.py@gmail.com'
+EMAIL_HOST_PASSWORD = os.environ.get('DAILIENATOR_EMAIL_PASS')
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
 
 # Application definition
 
