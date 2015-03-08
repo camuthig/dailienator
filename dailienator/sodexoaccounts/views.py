@@ -125,10 +125,11 @@ class AccountUserDeleteView(LoginRequiredMixin, DeleteView):
                           {'verbose_name': queryset.model._meta.verbose_name})
         return obj
 
-class AccountUpdateView(LoginRequiredMixin, UpdateView):
+class AccountUpdateView(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     model = Account
     template_name = "sodexoaccounts/account_update_form.html"
     fields = ['name', 'catertrax_url']
+    success_message = 'Account updated successfully'
     def get_success_url(self):
         return reverse_lazy('account-update')
 

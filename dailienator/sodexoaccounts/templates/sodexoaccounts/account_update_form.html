@@ -8,6 +8,7 @@
     </div>
     <div class="row">
         <div class="col-md-6 col-md-offset-3">
+            {% include "home/form_messages.html.include" %}
             <form class="form-horizontal" action="" method="post">{% csrf_token %}
                 <div class="form-group">
                     <label for="name" class="col-sm-2 control-label">Account Name</label>
@@ -18,7 +19,7 @@
                 <div class="form-group">
                     <label for="catertrax_url" class="col-sm-2 control-label">CaterTrax URL</label>
                     <div class="col-sm-10">
-                        <input class="form-control" id="catertrax_url" maxlength="255" name="catertrax_url" type="text" value="{{ form.catertrax_url.value | default_if_none:"" }}"/>
+                        <input class="form-control" id="catertrax_url" maxlength="255" name="catertrax_url" type="text" value="{{ form.catertrax_url.value | default_if_none:"" }}" readonly/>
                     </div>
                 </div>
                 <div class="form-actions">

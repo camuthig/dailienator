@@ -85,4 +85,3 @@ class AccountUserCaterTraxPasswordUpdateForm(forms.ModelForm):
         self.user.catertrax_password = cleaned_data.get("catertrax_password")
         self.user.save()
         return self.user
-
