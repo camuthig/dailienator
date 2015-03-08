@@ -14,6 +14,7 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^password/reset/', include('password_reset.urls')),
 
     #Home
     url(r'^$', Login.as_view(), name='login'),

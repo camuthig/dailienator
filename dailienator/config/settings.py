@@ -37,6 +37,13 @@ AES_KEYS= {
 	'catertrax_key': os.path.join(BASE_DIR, 'config', 'catertrax.key'),
 }
 
+# Email credentails
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'dailienator.py@gmail.com'
+EMAIL_HOST_PASSWORD = os.environ.get('DAILIENATOR_EMAIL_PASS')
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
 # Application definition
 
 CORE_APPS = (
@@ -52,6 +59,7 @@ THIRD_PARTY_APPS = (
 	'south',
 	'Crypto',
     'bootstrap3_datetime',
+    'password_reset'
 )
 
 INTERNAL_APPS = (

@@ -52,6 +52,7 @@ THIRD_PARTY_APPS = (
 	'south',
 	'Crypto',
     'bootstrap3_datetime',
+    'password_reset'
 )
 
 INTERNAL_APPS = (
