@@ -1,0 +1,110 @@
+{% extends "home/base.html" %}
+{% load form_extras %}
+<head>
+{% block title %}Dailienator - Support{% endblock %}
+</head>
+
+
+{% block content %}
+<div class="container">
+	<div class="row">
+        <div class=".col-md-6 .col-md-offset-3">
+            <h1>Support Request</h1>
+        </div>
+    </div>
+	<div class="row">
+        <div class="col-md-6 col-md-offset-3">
+			{% include "home/form_messages.html.include" %}
+
+			<form class="form-horizontal" action="" method="post">{% csrf_token %}
+
+	            {% for field in form.visible_fields %}
+                    <div id="div_{{ field.html_name }}" class="form-group{% if field.errors %} has-error{% endif %}">
+                        <label for="id_{{ field.html_name }}" class="col-sm-2 control-label">
+                            {{ field.label }}
+                        </label>
+                        <div class="col-sm-8">
+                    {% if field.field.widget|is_select %}
+                            <select class="form-control" name="{{ field.html_name }}" id="id_{{ field.html_name }}">
+                                {% for choice in field.field.choices %}
+
+                                    <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                                {% endfor %}
+                            </select>
+                    {% elif field.field.widget|is_textarea %}
+                        <div>
+                            <textarea class="form-control" rows="{{field.field.widget.attrs.rows}}" name="{{ field.html_name }}" id="id_{{ field.html_name }}"></textarea>
+                        </div>
+                    {% else %}
+                        <div>
+                            <input class="form-control" type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}" id="id_{{ field.html_name }}">
+                        </div>
+                    {% endif %}
+                    </div>
+
+	                <div class="text-muted pull-right">
+	                    <small>{{ field.help_text }}</small>
+	                </div>
+	                <div class="help-block">
+	                    {{ field.errors }}
+	                </div>
+	            </div>
+	          	{% endfor %}
+				<div class="form-actions">
+	                <button type="submit" class="btn btn-default">Send</button>
+	            </div>
+			</form>
+		</div>
+        <div class="col-md-10 col-md-offset-1">
+            <div>
+                <div>All requests will be evaluated and given a severity based on the below descriptions. An evaluation can be
+                expected within 12 hours of our team receiving the support request. Response time from there will be
+                based on the severity.</div>
+                <br>
+                <div>Responses from our team can range from fixes to the application to instructions on how to properly
+                use the application. Not all (especially Severity 4 issues) issues will be provided with a "fix", if it is
+                determined that everything is working as expected.</div>
+            </div>
+            <br>
+            <!-- Need a table here with severity descriptions -->
+            <div>
+                <table class="table">
+                    <tr>
+                        <td><h4>Severity</h4></td>
+                        <td><h4>Definition</h4></td>
+                        <td><h4>Response Time</h4></td>
+                    </tr>
+                    <tr>
+                        <td class="danger">Level 1 (urgent)</td>
+                        <td>
+                            A problem that severely impacts your use of the software (such as loss of data or in which your systems are not functioning). The situation halts your business operations and no procedural workaround exists. For example, receiving Internal (500) errors and being unable to generate dailies.
+                        </td>
+                        <td>8 Hours</td>
+                    </tr>
+                    <tr>
+                        <td class="warning">Level 2 (high)</td>
+                        <td>
+                             A problem where the software is functioning but your use is severely reduced. The situation is causing a high impact to portions of your business operations and no procedural workaround exists. For example, a single day's daily not getting created properly, while other days work fine.
+                        </td>
+                        <td>12 Hours</td>
+                    </tr>
+                    <tr>
+                        <td class="info">Level 3 (medium)</td>
+                        <td>
+                            A problem that involves partial, non-critical loss of use of the software. For production environments, there is a medium-to-low impact on your business, but your business continues to function, including by using a procedural workaround. For example, a very slow processing time when using the application.
+                        </td>
+                        <td>24 Hours</td>
+                    </tr>
+                    <tr>
+                        <td class="success">Level 4 (low)</td>
+                        <td>
+                            A general usage question, cosmetic issue, or recommendation for a future product enhancement or modification. There is low-to-no impact on your business or the performance or functionality of your system. For example, formatting of dailies or emails and issues administering users.
+                        </td>
+                        <td>72 Hours</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+	</div>
+</div>
+{% endblock %}

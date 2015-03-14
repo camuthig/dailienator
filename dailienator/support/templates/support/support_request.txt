@@ -1,0 +1,10 @@
+Support Request: {{ request_number }}
+
+Email: {{ user_email }}
+{% if user %}
+User: {{ user.first_name}} {{ user.last_name }}
+Account: {{ user.account }}
+
+{% endif %}
+Issue Category: {{ issue_category }}
+Issue Description: {{ issue_description|safe }}

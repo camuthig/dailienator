@@ -1,0 +1,63 @@
+{% load staticfiles %}
+<html>
+    <head>
+        <style>
+            html,
+            body {
+              padding-top: 60px;
+              padding-bottom: 30px;
+            }
+            @media (max-width: 979px) {
+              body {
+                padding-top: 0px;
+              }
+            }
+
+            h1, h2, h3, h4, h5, h6 {
+                font-family: 'jaf-domus-titling-web';
+            }
+            p, div {
+                font-family: 'Didact Gothic', Arial;
+            }
+        </style>
+
+        <!-- Flying Fig Fonts -->
+        <script src="//use.typekit.net/eip2trv.js"></script>
+        <script>try{Typekit.load();}catch(e){}</script>
+        <script type="text/javascript">
+            (function() {
+                var link_element = document.createElement("link"),
+                    s = document.getElementsByTagName("script")[0];
+                if (window.location.protocol !== "http:" && window.location.protocol !== "https:") {
+                    link_element.href = "http:";
+                }
+                link_element.href += "//fonts.googleapis.com/css?family=Didact+Gothic:400";
+                link_element.rel = "stylesheet";
+                link_element.type = "text/css";
+                s.parentNode.insertBefore(link_element, s);
+            })();
+        </script>
+    </head>
+    <body>
+        <div class="col-md-6 col-md-offset-3">
+            {% if user %}
+            Dear {{ user.first_name}} {{ user.last_name }},<br>
+            <br>
+            {% endif %}
+            This is your confirmation for your support request submitted on {% now "F j, Y" %} at {% now "f A e" %}<br><br>
+
+            Your support request number is: {{ request_number }}<br><br>
+
+            The details provided are:<br><br>
+
+            <strong>Issue Category:</strong> {{ issue_category }}<br>
+            <strong>Issue Description:</strong> {{ issue_description|safe }}<br><br>
+
+            A response will be provided by our support team within the standard response time described on our <a href="{{ support_page }}">support page</a><br><br>
+
+            Thank you,<br><br>
+
+            Dailienator Team
+        </div>
+    </body>
+</html>

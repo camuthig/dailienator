@@ -1,0 +1,20 @@
+{% if user %}
+Dear {{ user.first_name}} {{ user.last_name }},
+
+{% endif %}
+This is your cofirmation for your support request submitted on {% now "F j, Y" %} at {% now "f A e" %}
+
+Your support request number is: {{ request_number }}
+
+The details provided are:
+
+Issue Category: {{ issue_category }}
+Issue Description: {{ issue_description|safe }}
+
+A response will be provided by our support team within the standard response time described on our support page:
+
+{{ support_page }}
+
+Thank you,
+
+Dailienator Team
