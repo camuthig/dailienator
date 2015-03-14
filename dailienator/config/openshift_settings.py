@@ -37,12 +37,19 @@ AES_KEYS= {
 	'catertrax_key': os.path.join(os.environ.get('OPENSHIFT_DATA_DIR'), 'catertrax.key'),
 }
 
+# ADMIN Information
+ADMINS = (
+    ('Chris Muthig', 'dailienator.py@gmail.com'),
+)
+
 # Email credentails
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_HOST_USER = 'dailienator.py@gmail.com'
 EMAIL_HOST_PASSWORD = os.environ.get('DAILIENATOR_EMAIL_PASS')
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
+EMAIL_SUBJECT_PREFIX = ''
+SERVER_EMAIL = 'support@dailienator.com'
 
 # Application definition
 
@@ -65,7 +72,9 @@ THIRD_PARTY_APPS = (
 INTERNAL_APPS = (
 	'dailienator.sodexoaccounts',
     'dailienator.daily',
-	'dailienator.common.aesfield',
+    'dailienator.common.aesfield',
+    'dailienator.support',
+    'dailienator'
 )
 
 INSTALLED_APPS = CORE_APPS + THIRD_PARTY_APPS + INTERNAL_APPS
