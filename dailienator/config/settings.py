@@ -7,9 +7,18 @@ https://docs.djangoproject.com/en/1.6/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.6/ref/settings/
 """
+import os
+
+def env_var(key, default=None):
+    """Retrieves env vars and makes Python boolean replacements"""
+    val = os.environ.get(key, default)
+    if val == 'True':
+        val = True
+    elif val == 'False':
+        val = False
+    return val
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
@@ -20,9 +29,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = os.environ.get('DAILIENATOR_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DAILIENATOR_DEBUG')
+DEBUG = env_var('DAILIENATOR_DEBUG', False)
 
-TEMPLATE_DEBUG = os.environ.get('DAILIENATOR_DEBUG')
+TEMPLATE_DEBUG = env_var('DAILIENATOR_DEBUG', False)
 TEMPLATE_DIRS = (
 				os.path.join(BASE_DIR, 'templates'),
 				)

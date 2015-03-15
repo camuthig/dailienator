@@ -1,11 +1,20 @@
 {% extends "home/base.html" %}
  
-{% block title %}Page not found{% endblock %}
+{% block title %}Internal Error{% endblock %}
  
 {% block content %}
-<h1>Page Unavailable</h1>
- 
-<p>Sorry, but the requested page is unavailable due to a server hiccup.</p>
+<div class="container">
+    <div class="row">
+        <div class=".col-md-6 .col-md-offset-3">
+            <h1>Internal Error</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <p>Sorry, but the requested page is unavailable due to a server hiccup.</p>
 
-<p>Our engineers have been notified, so check back later.</p>
+            <p>Our engineers have been notified, so check back later.</p>
+        </div>
+    </div>
+</div>
 {% endblock %}
