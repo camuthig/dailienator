@@ -3,6 +3,7 @@ from sodexoaccounts.views import AccountUserListView, AccountUserCreateView, Acc
 from views import Login, Logout, PasswordUpdateView
 from support.views import SupportRequestView
 from daily.views import DailyCreateView
+from config import settings
 
 from django.core.urlresolvers import reverse_lazy
 from django.contrib import admin
@@ -35,3 +36,9 @@ urlpatterns = patterns('',
     #Support Views
     url(r'^support$', SupportRequestView.as_view(), name='support-request'),
 )
+
+if settings.DEBUG:
+    urlpatterns += patterns('',
+        (r'^500/$', 'django.views.defaults.server_error'),
+        (r'^404/$', 'django.views.defaults.page_not_found'),
+    )
