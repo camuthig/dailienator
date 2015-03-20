@@ -36,6 +36,10 @@ TEMPLATE_DIRS = (
 				os.path.join(BASE_DIR, 'templates'),
 				)
 
+FIXTURE_DIRS = (
+    os.path.join(BASE_DIR, 'fixtures'),
+)
+
 ALLOWED_HOSTS = []
 
 #Override the authentication user with my customer model
