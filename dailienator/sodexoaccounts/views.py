@@ -50,6 +50,8 @@ class AccountUserUpdateView(SuccessMessageMixin, LoginRequiredMixin, UpdateView)
     template_name = "sodexoaccounts/accountuser_update_form.html"
 
     def get_success_url(self):
+        if self.kwargs.get('username') != self.request.POST['username']:
+            self.kwargs['username'] = self.request.POST['username']
         return reverse_lazy('accountuser-update', kwargs=self.kwargs)
 
     def get_template_names(self):
