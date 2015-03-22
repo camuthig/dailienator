@@ -1,23 +1,20 @@
-"""
-Django settings for dailienator project.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/1.6/topics/settings/
-
-For the full list of settings and their values, see
-https://docs.djangoproject.com/en/1.6/ref/settings/
-"""
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-ALLOWED_HOSTS = ['dailienator-kringle.rhcloud.com']
-
 # Keys used by AESFields
 AES_KEYS= {
-	'catertrax_key': os.path.join(os.environ.get('OPENSHIFT_DATA_DIR'), 'catertrax.key'),
+    'catertrax_key': os.path.join(BASE_DIR, 'config', 'catertrax.key'),
 }
+
+
+# Dev Only Installed Apps
+INSTALLED_APPS = (
+    'kombu.transport.django',
+)
+
+ALLOWED_HOSTS = []
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
@@ -25,16 +22,19 @@ AES_KEYS= {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'USER': os.environ.get('OPENSHIFT_MYSQL_DB_USERNAME'),
-        'PASSWORD': os.environ.get('OPENSHIFT_MYSQL_DB_PASSWORD'),
-        'NAME': 'dailienator',
-        'HOST': os.environ.get('OPENSHIFT_MYSQL_DB_HOST'),
-        'PORT': os.environ.get('OPENSHIFT_MYSQL_DB_PORT'),
+        'USER': 'root',
+        'PASSWORD': '',
+        'NAME': 'dailienator'
     }
 }
 
-STATIC_ROOT = os.path.join(os.environ.get('OPENSHIFT_REPO_DIR'), 'wsgi', 'static')
+# Celery
+BROKER_URL = 'django://'
 
+# Static Files
+STATIC_ROOT = '/var/www/static/dailienator'
+
+# Logging
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -51,7 +51,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(os.environ.get('OPENSHIFT_LOG_DIR'), 'dailienator.log'),
+            'filename': 'logging/dailienator.log',
             'formatter': 'verbose'
         },
     },

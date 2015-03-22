@@ -9,6 +9,12 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 import os
 
+if os.environ.get('OPENSHIFT_LOG_DIR'):
+    from openshift_settings import *
+if os.environ.get('DAILIENATOR_ENV'):
+    if os.environ.get('DAILIENATOR_ENV') == 'dev':
+        from dev_settings import *
+
 def env_var(key, default=None):
     """Retrieves env vars and makes Python boolean replacements"""
     val = os.environ.get(key, default)
@@ -40,15 +46,8 @@ FIXTURE_DIRS = (
     os.path.join(BASE_DIR, 'fixtures'),
 )
 
-ALLOWED_HOSTS = []
-
 #Override the authentication user with my customer model
 AUTH_USER_MODEL = 'sodexoaccounts.AccountUser'
-
-# Keys used by AESFields
-AES_KEYS= {
-	'catertrax_key': os.path.join(BASE_DIR, 'config', 'catertrax.key'),
-}
 
 # ADMIN Information
 ADMINS = (
@@ -83,7 +82,7 @@ THIRD_PARTY_APPS = (
 	'south',
 	'Crypto',
     'bootstrap3_datetime',
-    'password_reset'
+    'password_reset',
 )
 
 INTERNAL_APPS = (
@@ -94,7 +93,10 @@ INTERNAL_APPS = (
     'dailienator'
 )
 
-INSTALLED_APPS = CORE_APPS + THIRD_PARTY_APPS + INTERNAL_APPS
+if INSTALLED_APPS:
+    INSTALLED_APPS += CORE_APPS + THIRD_PARTY_APPS + INTERNAL_APPS
+else:
+    INSTALLED_APPS = CORE_APPS + THIRD_PARTY_APPS + INTERNAL_APPS
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -114,17 +116,6 @@ LOGIN_REDIRECT_URL = 'users/'
 LOGOUT_REDIRECT_URL = '/'
 
 WSGI_APPLICATION = 'dailienator.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/1.6/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
@@ -153,37 +144,3 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
 	os.path.join(BASE_DIR, 'static'),
 )
-
-STATIC_ROOT = '/var/www/static/dailienator'
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
-            'datefmt' : "%d/%b/%Y %H:%M:%S"
-        },
-        'simple': {
-            'format': '%(levelname)s %(message)s'
-        },
-    },
-    'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': 'logging/dailienator.log',
-            'formatter': 'verbose'
-        },
-    },
-    'loggers': {
-        'dailienator': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
-        },
-    }
-}
-
-
-if os.environ.get('OPENSHIFT_LOG_DIR'):
-    from openshift_settings import *
