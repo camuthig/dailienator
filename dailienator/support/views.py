@@ -43,8 +43,6 @@ class SupportRequestView(SuccessMessageMixin, FormView):
 
         self.sendSupportRequest(context)
         self.sendSupportConfirm(context)
-        # email = EmailMessage('Support Request ' + request_number, body, 'dailienator.py@gmail.com', [settings.EMAIL_HOST_USER])
-        # email.send()
         return super(SupportRequestView, self).form_valid(form)
 
     def sendSupportRequest(self, context):

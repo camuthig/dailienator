@@ -113,8 +113,12 @@ WSGI_APPLICATION = 'dailienator.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(os.environ.get('OPENSHIFT_DATA_DIR'), 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'USER': os.environ.get('OPENSHIFT_MYSQL_DB_USERNAME'),
+        'PASSWORD': os.environ.get('OPENSHIFT_MYSQL_DB_PASSWORD'),
+        'NAME': 'dailienator',
+        'HOST': os.environ.get('OPENSHIFT_MYSQL_DB_HOST'),
+        'PORT': os.environ.get('OPENSHIFT_MYSQL_DB_PORT'),
     }
 }
 
