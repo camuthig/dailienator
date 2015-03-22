@@ -3,7 +3,7 @@ import logging
 
 from django.views.generic import FormView
 from django.contrib.messages.views import SuccessMessageMixin
-from django.core.mail import mail_admins, EmailMultiAlternatives
+from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template import loader
 
 from dailienator.config import settings
@@ -46,10 +46,14 @@ class SupportRequestView(SuccessMessageMixin, FormView):
         return super(SupportRequestView, self).form_valid(form)
 
     def sendSupportRequest(self, context):
-        logger.debug(context)
         body = loader.render_to_string(self.email_template_name,
                                        context).strip()
-        mail_admins('Support Request ' + context.get('request_number'), body)
+        send_mail(
+            'Support Request ' + context.get('request_number'),
+            body,
+            settings.SERVER_EMAIL,
+            settings.SUPPORTERS)
+
 
     def sendSupportConfirm(self, context):
         subject, from_email, to = 'Support Confirmation: ' + context.get('request_number'), settings.SERVER_EMAIL, context.get('user_email')

@@ -55,9 +55,13 @@ ADMINS = (
     ('Chris Muthig', 'dailienator.py@gmail.com'),
 )
 
+SUPPORTERS = [
+    'help.dailienator@gmail.com',
+]
+
 # Email credentails
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'dailienator.py@gmail.com'
+EMAIL_HOST_USER = 'help.dailienator@gmail.com'
 EMAIL_HOST_PASSWORD = os.environ.get('DAILIENATOR_EMAIL_PASS')
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
