@@ -174,3 +174,7 @@ LOGGING = {
         },
     }
 }
+
+
+if os.environ.get('OPENSHIFT_LOG_DIR'):
+    import openshift_settings
