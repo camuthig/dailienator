@@ -135,6 +135,12 @@ SESSION_COOKIE_AGE = 86400
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
+# Common Celery configurations
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/

@@ -3,11 +3,11 @@ import logging
 
 from django.views.generic import FormView
 from django.contrib.messages.views import SuccessMessageMixin
-from django.core.mail import send_mail, EmailMultiAlternatives
-from django.template import loader
 
 from dailienator.config import settings
 from dailienator.sodexoaccounts.models import AccountUser, Account
+
+from dailienator.support.tasks import sendSupportRequest, sendSupportConfirm
 from forms import SupportRequestForm
 
 logger = logging.getLogger(__name__)
@@ -26,42 +26,31 @@ class SupportRequestView(SuccessMessageMixin, FormView):
             request_user = self.request.user
         else:
             requestor_email = self.request.POST['email']
-            request_user = AccountUser.objects.filter(email = self.request.POST['email'])
+            user_matches = AccountUser.objects.filter(email = self.request.POST['email'])
+            if len(user_matches) != 0:
+                request_user = user_matches[0]
 
-
+        if request_user:
+            user = {
+                'first_name': request_user.first_name,
+                'last_name': request_user.last_name,
+                'account': request_user.account.name if request_user.account else ''
+            }
 
         # Create a large random number to identify the error
         request_number = uuid.uuid4().hex
         context = {
             'request_number': request_number,
-            'user': request_user,
+            'user': user,
             'user_email': requestor_email,
             'issue_category': self.request.POST['issue_category'],
             'issue_description': self.request.POST['issue_description'],
             'support_page': self.request.build_absolute_uri()
         }
 
-        self.sendSupportRequest(context)
-        self.sendSupportConfirm(context)
+        sendSupportRequest.delay(self.email_template_name, context)
+        sendSupportConfirm.delay(self.confirm_template_name, context)
         return super(SupportRequestView, self).form_valid(form)
-
-    def sendSupportRequest(self, context):
-        body = loader.render_to_string(self.email_template_name,
-                                       context).strip()
-        send_mail(
-            'Support Request ' + context.get('request_number'),
-            body,
-            settings.SERVER_EMAIL,
-            settings.SUPPORTERS)
-
-
-    def sendSupportConfirm(self, context):
-        subject, from_email, to = 'Support Confirmation: ' + context.get('request_number'), settings.SERVER_EMAIL, context.get('user_email')
-        text_content = loader.render_to_string(self.confirm_template_name + '.txt', context).strip()
-        html_content = loader.render_to_string(self.confirm_template_name + '.html', context).strip()
-        msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
-        msg.attach_alternative(html_content, "text/html")
-        msg.send()
 
     def get_form_kwargs(self):
         """

@@ -33,6 +33,9 @@ DATABASES = {
     }
 }
 
+# Celery
+BROKER_URL = 'ironmq://' + os.environ.get('DAILIENATOR_IRON_PRODUCT_ID') + ':' + os.environ.get('DAILIENATOR_IRON_TOKEN')
+
 STATIC_ROOT = os.path.join(os.environ.get('OPENSHIFT_REPO_DIR'), 'wsgi', 'static')
 
 LOGGING = {
