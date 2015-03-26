@@ -4,8 +4,12 @@ source ${OPENSHIFT_HOMEDIR}python/virtenv/bin/activate
 
 export PYTHON_EGG_CACHE=${OPENSHIFT_HOME_DIR}python/virtenv/lib/python2.7/site-packages/
 
-#echo "Preparing the openshift_settings.py file for use"
-#cp "$OPENSHIFT_REPO_DIR"dailienator/config/openshift_settings.py "$OPENSHIFT_REPO_DIR"dailienator/config/settings.py
+# Stop the celery workers
+ps -p `cat ${OPENSHIFT_DATA_DIR}worker1.pid` > /dev/null 2>&1
+if [ $? != 1 ]
+then
+    celery multi stopwait worker1 --pidfile="${OPENSHIFT_DATA_DIR}%n.pid"
+fi
 
 echo "Executing 'python ${OPENSHIFT_REPO_DIR}manage.py syncdb --noinput'"
 python "$OPENSHIFT_REPO_DIR"manage.py syncdb --noinput
