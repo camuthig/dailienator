@@ -17,6 +17,7 @@ The application is configured to run locally for development and on Openshift fo
     * DAILIENATOR_EMAIL_PASS
 1. Create a 32 byte AES key in dailienator/config/catertrax.key.
 1. Run ```pip install -r requirements.txt```
+1. Create a directory at the root of the project called logging.
 1. Run ```./manage.py syncdb```
 1. Run ```./manage.py migrate```
 1. Run ```./manage.py runserver```
