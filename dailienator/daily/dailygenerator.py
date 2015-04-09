@@ -16,6 +16,8 @@ import traceback
 import base64
 from time import strftime
 
+from importlib import import_module
+
 from dailienator.sodexoaccounts.models import AccountUser, Account
 
 # global variables
@@ -34,40 +36,12 @@ vehicleColNum = 10
 
 logger = logging.getLogger(__name__)
 
-class RowData(object):
-    """A class representing the data for a single row in the target Excel
-    sheet. This is empty because it is just data attributes"""
-    pass
-
 class DailyGenerator():
     def validateDate(self, date):
         try:
             time.strptime(date, '%m/%d/%Y')
         except ValueError:
             raise ValueError("Invalid date")
-
-    def getShipInfo(self, rowData, rowSoup):
-        """Retrieve the building, floor, room, sevrice style and event style.
-        Return a new copy of the RowData object with this information"""
-        # This all just shows up as shipinfolabel
-        shipInfo = rowSoup.select(".shipinfolabel")
-        shipCount = 0
-        # retrieve Ship Info
-
-        for shipCount in range(len(shipInfo)):
-            if shipInfo[shipCount].get_text().strip() == 'Building:' :
-                rowData.building = shipInfo[shipCount + 1].get_text().strip()
-            elif shipInfo[shipCount].get_text().strip() == 'Room #/Room Name:' :
-                rowData.room = shipInfo[shipCount + 1].get_text().strip()
-            elif shipInfo[shipCount].get_text().strip() == 'Floor:' :
-                rowData.floor = shipInfo[shipCount + 1].get_text().strip()
-            elif shipInfo[shipCount].get_text().strip() == 'Service Style:' :
-                rowData.serviceStyle = shipInfo[shipCount + 1].get_text().strip()
-            elif shipInfo[shipCount].get_text().strip() == 'Event Style:' :
-                rowData.eventStyle = shipInfo[shipCount + 1].get_text().strip()
-
-            shipCount = shipCount + 2
-        return rowData
 
     def testDef(self):
         f = open('/var/lib/openshift/524f394ee0b8cd488d000029/app-root/repo/wsgi/openshift/long_day.html', 'r')
@@ -149,63 +123,6 @@ class DailyGenerator():
         data = br.response().read()
         br.close()
         return data
-
-    def buildRowData(self, input):
-        """
-            Build out the data for all rows
-            For each basiccoverorw item in the extracted data create a new RowObject
-                Place the found information for the basiccoverorw in the RowObject
-            Store all of these items in a list of RowObjects
-            Return this list
-        """
-        #print 'Building out row data'
-        logger.debug('Building out row data')
-        allRows = list()
-        orderCount = 0
-        # populate with an empty RowData object for each available row.
-
-        pageSoup = BeautifulSoup(input, "lxml")
-        # Gather all of the rows from the input
-        coverRows = pageSoup.select(".basiccoverorw")
-        logger.debug('The size of the list is: ' + str(len(coverRows)))
-        # No longer using a secondary BeautifulSoup object for each row
-        # as this was causing spinning issues on OpenShift
-        for orderCount in range (len(coverRows)):
-            logger.debug('Collecting information for order: ' + str(orderCount))
-            rowData = RowData()
-            # retrieve the Order ID
-            rowData.orderID = coverRows[orderCount].find('span', 'orderid').get_text().strip()
-
-            # retrive the contact information
-            if(coverRows[orderCount].find('span', 'shipname') is None) == False:
-                rowData.contactName = coverRows[orderCount].find('span', 'shipname').get_text().strip()
-            if(coverRows[orderCount].find('span', 'shipcompanyname') is None) == False:
-                rowData.contactCompany = coverRows[orderCount].find('span', 'shipcompanyname').get_text().strip()
-
-            # retrieve important times
-            if(coverRows[orderCount].find('span', 'shiptime1') is None) == False:
-                rowData.deliveryTime = coverRows[orderCount].find('span', 'shiptime1').get_text().strip()
-            if(coverRows[orderCount].find('span', 'shiptime2') is None) == False:
-                rowData.startTime = coverRows[orderCount].find('span', 'shiptime2').get_text().strip()
-            if(coverRows[orderCount].find('span', 'shiptime3') is None) == False:
-                rowData.endTime = coverRows[orderCount].find('span', 'shiptime3').get_text().strip()
-            if(coverRows[orderCount].find('span', 'shiptime4') is None) == False:
-                rowData.pickUpTime = coverRows[orderCount].find('span', 'shiptime4').get_text().strip()
-
-            # guest count
-            logger.debug('Getting guest count')
-            rowData.guestCount = coverRows[orderCount].find('span', 'guestcount').get_text().strip()
-
-            # Ship information
-            logger.debug('Executing method to get ship info')
-            rowData = self.getShipInfo(rowData, coverRows[orderCount])
-            # TASK I need to find some way to handle this list properly
-            allRows.append(rowData)
-            orderCount = orderCount + 1
-
-        #print 'Finished building row data'
-        logger.debug('Finished building row data')
-        return allRows
 
     def addKitchenSheetInfo(self,username,password,site,orders,):
         """
@@ -295,38 +212,6 @@ class DailyGenerator():
         br.close()
         return orders
 
-
-    def buildPickUpData(self, rowList):
-        """
-            For each row currently in RowData,
-            create the corresponding pick up time.
-        """
-        newList = list()
-        for rowData in rowList:
-            # Do not build a pick up row if the service style or the event style contains 'All Disposable'
-            # Conditions:
-            #   service style exists and is all disposable OR event style exists and is all disposable
-            #   AND there is a pickUpTime to set as the delivery time
-            if (((hasattr(rowData, 'serviceStyle') and'all disposable' in rowData.serviceStyle.lower())
-            or (hasattr(rowData, 'eventStyle') and 'all disposable' in rowData.eventStyle.lower()))
-            == False) and hasattr(rowData, 'pickUpTime') == True:
-                newRow = RowData()
-                newRow.guestCount = 'P/U'
-                if hasattr(rowData, 'orderID'):
-                    newRow.orderID = rowData.orderID
-                if hasattr(rowData, 'pickUpTime'):
-                    newRow.deliveryTime = rowData.pickUpTime
-                if hasattr(rowData, 'building'):
-                    newRow.building = rowData.building
-                if hasattr(rowData, 'room'):
-                    newRow.room = rowData.room
-                if hasattr(rowData, 'floor'):
-                    newRow.floor = rowData.floor
-                newList.append(newRow)
-        rowList.extend(newList)
-        #print 'finished building pick up rows'
-        return rowList
-
     def sortRowList(self, rowList):
         """Change the AM/PM time for simplified comparison."""
         for item in rowList:
@@ -344,30 +229,27 @@ class DailyGenerator():
         #print 'Finished sorting rows'
         return sortedList
 
-    def buildLocationString(self, row):
-        """
-            Utility method to build the hyphen delimited location string.
-        """
-        locationString = ""
-        if hasattr(row, 'building'):
-                locationString = row.building + " - "
-        else:
-            locationString = "-"
-        if hasattr(row, 'floor'):
-            locationString = locationString + row.floor + " - "
-        else:
-            locationString = locationString + " - "
-        if hasattr(row, 'room'):
-            locationString = locationString + row.room
-        else:
-            locationString = locationString
-        return locationString
-
     def buildExcelSheet(self, input, date, account):
         """
             Build out the excel sheet
             Iterate through the list of RowObjects, writing information in
             proper format
+            This method expects each element of input to  possibly have the following keys.
+            The keys are not guaranteed to exist however.
+            - building
+            - room
+            - floor
+            - location
+            - serviceStyle
+            - eventStyle
+            - guestCount
+            - orderID
+            - pickUpTime
+            - deliveryTime
+            - startTime
+            - endTime
+            - contactName
+            - contactCompany
         """
         #print 'Starting to build the excel file'
         headers = ['Guest Count', 'Set Time', 'Contract #', 'Location',
@@ -550,12 +432,12 @@ class DailyGenerator():
             if hasattr(row, 'guestCount') and row.guestCount == "P/U":
                 worksheet.write(rowCounter, guestColNum, row.guestCount, pickUpFormat)
                 worksheet.write(rowCounter, contractNumColNum, "", eventFormat)
+                worksheet.write(rowCounter, locationColNum, row.location, eventFormat)
             elif hasattr(row, 'guestCount'):
                 worksheet.write(rowCounter, guestColNum, row.guestCount, eventFormat)
                 worksheet.write(rowCounter, contractNumColNum, row.orderID, eventFormat)
-            # Build location string
-            locationString = self.buildLocationString(row)
-            worksheet.write(rowCounter, locationColNum, locationString, eventFormat)
+                worksheet.write(rowCounter, locationColNum, row.location, eventFormat)
+
             # Write the service style column
             if hasattr(row, 'serviceStyle'):
                 # If this is a All Disposable event, write service style as "All Disposable"
@@ -570,6 +452,8 @@ class DailyGenerator():
             worksheet.write(rowCounter, eventColNum, "", eventFormat)
             if hasattr(row, 'pickUpTime'):
                 worksheet.write(rowCounter, pickUpColNum, row.pickUpTime, eventFormat)
+            elif hasattr(row, 'endTime'):
+                worksheet.write(rowCounter, pickUpColNum, row.endTime, eventFormat)
             else:
                 worksheet.write(rowCounter, pickUpColNum, "", eventFormat)
             worksheet.write(rowCounter, assignedCatererColNum, "", eventFormat)
@@ -671,6 +555,9 @@ class DailyGenerator():
         try:
             parsedDate = date
             user_account = user.account
+            parser = import_module('dailienator.daily.' + user_account.slug + '_parser')
+            parser = getattr(parser, 'Parser')
+            my_parser = parser()
 
             logger.info('Generating daily for account ' + user_account.name +
                         ' and date ' + parsedDate);
@@ -684,7 +571,9 @@ class DailyGenerator():
             #The input data is the raw information received from Catertrax
             #We can use this to determine if the user is logged in or not.
             self.isLoggedIn(data)
-            rowList = self.buildRowData(data)
+
+            # Start parsing of data
+            rowList = my_parser.buildRowData(data)
 
             finishNormal = time.time()
             totalNormal = (finishNormal - startNormal)
@@ -698,7 +587,8 @@ class DailyGenerator():
 
 
             startNormal1 = time.time()
-            rowList = self.buildPickUpData(rowList)
+
+            # Start of Generic
             rowList = self.sortRowList(rowList)
             daily = self.buildExcelSheet(rowList, parsedDate, user_account)
             self.emailFile(user, daily, parsedDate)
