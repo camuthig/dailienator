@@ -382,7 +382,7 @@ class DailyGenerator():
         # Set the file name
         fileName = 'Master_Daily-' + fileDate + '.xlsx'
         if settings.DEBUG is True:
-            path = os.path.join(os.getcwd(),'..', '..', '..', '..', 'tests', fileName)
+            path = os.path.join(settings.BASE_DIR, '..', 'tests', fileName)
         else:
             path = os.environ['OPENSHIFT_DATA_DIR'] + fileName
         file = open(path, 'w')
@@ -525,7 +525,7 @@ class DailyGenerator():
 
 
         columnCounter = 0
-        if account.site == 'https://emory.catertrax.com/':
+        if account.catertrax_url == 'https://emory.catertrax.com/':
             # insert the start day row
             for columnCounter in range (len(headers) + 1):
                 if columnCounter == locationColNum:
@@ -583,7 +583,7 @@ class DailyGenerator():
             rowCounter += 1
 
         # insert the end day row
-        if account.site == 'https://emory.catertrax.com/':
+        if account.catertrax_url == 'https://emory.catertrax.com/':
             #Only Emory has a setup for the end of day row so far
             columnCounter = 0
             for columnCounter in range (len(headers) + 1):
@@ -692,7 +692,7 @@ class DailyGenerator():
             #startKitchen = time.time()
             #rowList = self.addKitchenSheetInfo(user.catertrax_user,
             #                    base64.decodestring(user.catertrax_password),
-            #                    user_account.site, rowList)
+            #                    user_account.catertrax_url, rowList)
             #finishKitchen = time.time()
             #totalKitchen = (finishKitchen - startKitchen)
 

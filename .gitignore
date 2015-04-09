@@ -2,7 +2,9 @@
 db.sqlite3
 *.key
 *~
+.DS_Store
 dailienator/logging/*
 logging/*
+tests/*
 
 dailienator/config/catertrax.key
