@@ -9,7 +9,21 @@ logger = logging.getLogger(__name__)
 class RowData(object):
     """A class representing the data for a single row in the target Excel
     sheet. This is empty because it is just data attributes"""
-    pass
+    def __init__(self):
+        self.contactName    = ''
+        self.contactCompany = ''
+        self.deliveryTime   = ''
+        self.startTime      = ''
+        self.endTime        = ''
+        self.pickUpTime     = ''
+        self.guestCount     = ''
+        self.location       = ''
+        self.building       = ''
+        self.room           = ''
+        self.floor          = ''
+        self.serviceStyle   = ''
+        self.eventStyle     = ''
+        self.specialNotes   = {}
 
 class BasicParser():
     building_key = 'Building'
@@ -33,12 +47,6 @@ class BasicParser():
         # This all just shows up as shipinfolabel
         shipInfo = rowSoup.select(".shipinfolabel")
         shipCount = 0
-        rowData.building     = ''
-        rowData.room         = ''
-        rowData.floor        = ''
-        rowData.serviceStyle = ''
-        rowData.eventStyle   = ''
-        rowData.specialNotes = {}
 
         for shipCount in range(0, len(shipInfo), 2):
             if self.building_key and shipInfo[shipCount].get_text().strip() == self.building_key + ':' :
@@ -94,20 +102,6 @@ class BasicParser():
                 or ('all disposable' in entry.eventStyle.lower())) == False
                 and (entry.endTime or entry.pickUpTime)) :
                 pickUpRow = RowData()
-                pickUpRow.contactName    = ''
-                pickUpRow.contactCompany = ''
-                pickUpRow.deliveryTime   = ''
-                pickUpRow.startTime      = ''
-                pickUpRow.endTime        = ''
-                pickUpRow.pickUpTime     = ''
-                pickUpRow.guestCount     = ''
-                pickUpRow.location       = ''
-                pickUpRow.building       = ''
-                pickUpRow.room           = ''
-                pickUpRow.floor          = ''
-                pickUpRow.serviceStyle   = ''
-                pickUpRow.eventStyle     = ''
-                pickUpRow.specialNotes   = {}
 
                 pickUpRow.guestCount = 'P/U'
                 if entry.orderID:
@@ -142,15 +136,6 @@ class BasicParser():
             - location
         """
         rowData = RowData()
-
-        rowData.contactName    = ''
-        rowData.contactCompany = ''
-        rowData.deliveryTime   = ''
-        rowData.startTime      = ''
-        rowData.endTime        = ''
-        rowData.pickUpTime     = ''
-        rowData.guestCount     = ''
-        rowData.location       = ''
         # retrieve the Order ID
         rowData.orderID = coverEntry.find('span', 'orderid').get_text().strip()
 
@@ -205,8 +190,6 @@ class BasicParser():
             logger.debug('Collecting information for order: ' + str(orderCount))
             entry = self.buildEntry(coverEntries[orderCount])
 
-
-            # TASK I need to find some way to handle this list properly
             allEntries.append(entry)
             orderCount = orderCount + 1
 
