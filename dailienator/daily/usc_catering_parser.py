@@ -89,8 +89,10 @@ class Parser():
             # Conditions:
             #   service style exists and is all disposable OR event style exists and is all disposable
             #   AND there is a pickUpTime to set as the delivery time
-            if (('all disposable' in entry.serviceStyle.lower())
-            or ('all disposable' in entry.eventStyle.lower())) == False and entry.endTime :
+            if (
+                (('all disposable' in entry.serviceStyle.lower())
+                or ('all disposable' in entry.eventStyle.lower())) == False
+                and (entry.endTime or entry.pickUpTime)) :
                 pickUpRow = RowData()
                 pickUpRow.contactName    = ''
                 pickUpRow.contactCompany = ''
@@ -108,17 +110,19 @@ class Parser():
                 pickUpRow.specialNotes   = {}
 
                 pickUpRow.guestCount = 'P/U'
-                if hasattr(entry, 'orderID'):
+                if entry.orderID:
                     pickUpRow.orderID = entry.orderID
-                if hasattr(entry, 'endTime'):
+                if entry.pickUpTime:
+                    pickUpRow.deliveryTime = entry.pickUpTime
+                else:
                     pickUpRow.deliveryTime = entry.endTime
-                if hasattr(entry, 'building'):
+                if entry.building:
                     pickUpRow.building = entry.building
-                if hasattr(entry, 'room'):
+                if entry.room:
                     pickUpRow.room = entry.room
-                if hasattr(entry, 'floor'):
+                if entry.floor:
                     pickUpRow.floor = entry.floor
-                if hasattr(entry, 'location'):
+                if entry.location:
                     pickUpRow.location = entry.location
                 newList.append(pickUpRow)
         allEntries.extend(newList)
