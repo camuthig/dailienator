@@ -12,30 +12,51 @@ class RowData(object):
     pass
 
 class Parser():
+    building_key = 'Building'
+    room_key     = 'Room #'
+    floor_key    = 'Floor'
+    service_key  = 'Type of Event'
+    event_key    = None
 
     def getShipInfo(self, rowData, rowSoup):
-        """Retrieve the building, floor, room, sevrice style and event style.
-        Return a new copy of the RowData object with this information"""
+        """
+            Retrieve the building, floor, room, sevrice style and event style.
+            Return a new copy of the RowData object with this information
+            This method will append the following keys to the rowData:
+            - building
+            - room
+            - floor
+            - serviceStyle
+            - eventStyle
+            - specialNotes (dict of key and value)
+        """
         # This all just shows up as shipinfolabel
         shipInfo = rowSoup.select(".shipinfolabel")
         shipCount = 0
-        # retrieve Ship Info
+        rowData.building     = ''
+        rowData.room         = ''
+        rowData.floor        = ''
+        rowData.serviceStyle = ''
+        rowData.eventStyle   = ''
+        rowData.specialNotes = {}
 
-        for shipCount in range(len(shipInfo)):
-            if shipInfo[shipCount].get_text().strip() == 'Building:' :
+        for shipCount in range(0, len(shipInfo), 2):
+            if self.building_key and shipInfo[shipCount].get_text().strip() == self.building_key + ':' :
                 rowData.building = shipInfo[shipCount + 1].get_text().strip()
-            elif shipInfo[shipCount].get_text().strip() == 'Room #:' :
+            elif self.room_key and shipInfo[shipCount].get_text().strip() == self.room_key + ':' :
                 rowData.room = shipInfo[shipCount + 1].get_text().strip()
-            elif shipInfo[shipCount].get_text().strip() == 'Floor:' :
+            elif self.floor_key and shipInfo[shipCount].get_text().strip() == self.floor_key + ':' :
                 rowData.floor = shipInfo[shipCount + 1].get_text().strip()
-
-            # TASK Only the serviceStyle is actually put in the excel
-            elif shipInfo[shipCount].get_text().strip() == 'Type of Event:' :
+            elif self.service_key and shipInfo[shipCount].get_text().strip() == self.service_key + ':' :
                 rowData.serviceStyle = shipInfo[shipCount + 1].get_text().strip()
-            elif shipInfo[shipCount].get_text().strip() == 'Type of Event:' :
+            elif self.event_key and shipInfo[shipCount].get_text().strip() == self.event_key + ':' :
                 rowData.eventStyle = shipInfo[shipCount + 1].get_text().strip()
+            else :
+                # Treat it as a special not. We'll save everything before : as the key
+                # and everything after it as the value.
+                key = shipInfo[shipCount].get_text().strip()[:-1]
+                rowData.specialNotes[key] = shipInfo[shipCount + 1].get_text().strip()
 
-            shipCount = shipCount + 2
         return rowData
 
     def buildLocationString(self, row):
@@ -57,40 +78,91 @@ class Parser():
             locationString = locationString
         return locationString
 
-    def buildPickUpData(self, rowList):
+    def buildPickUpData(self, allEntries):
         """
             For each row currently in RowData,
             create the corresponding pick up time.
         """
         newList = list()
-        for rowData in rowList:
+        for entry in allEntries:
             # Do not build a pick up row if the service style or the event style contains 'All Disposable'
             # Conditions:
             #   service style exists and is all disposable OR event style exists and is all disposable
             #   AND there is a pickUpTime to set as the delivery time
-            if (((hasattr(rowData, 'serviceStyle') and'all disposable' in rowData.serviceStyle.lower())
-            or (hasattr(rowData, 'eventStyle') and 'all disposable' in rowData.eventStyle.lower()))
-            == False) and hasattr(rowData, 'endTime') == True:
-                newRow = RowData()
-                newRow.guestCount = 'P/U'
-                if hasattr(rowData, 'orderID'):
-                    newRow.orderID = rowData.orderID
-                if hasattr(rowData, 'endTime'):
-                    newRow.deliveryTime = rowData.endTime
-                if hasattr(rowData, 'building'):
-                    newRow.building = rowData.building
-                if hasattr(rowData, 'room'):
-                    newRow.room = rowData.room
-                if hasattr(rowData, 'floor'):
-                    newRow.floor = rowData.floor
-                if hasattr(rowData, 'location'):
-                    newRow.location = rowData.location
-                newList.append(newRow)
-        rowList.extend(newList)
+            if (('all disposable' in entry.serviceStyle.lower())
+            or ('all disposable' in entry.eventStyle.lower())) == False and entry.endTime :
+                pickUpRow = RowData()
+                pickUpRow.guestCount = 'P/U'
+                if hasattr(entry, 'orderID'):
+                    pickUpRow.orderID = entry.orderID
+                if hasattr(entry, 'endTime'):
+                    pickUpRow.deliveryTime = entry.endTime
+                if hasattr(entry, 'building'):
+                    pickUpRow.building = entry.building
+                if hasattr(entry, 'room'):
+                    pickUpRow.room = entry.room
+                if hasattr(entry, 'floor'):
+                    pickUpRow.floor = entry.floor
+                if hasattr(entry, 'location'):
+                    pickUpRow.location = entry.location
+                newList.append(pickUpRow)
+        allEntries.extend(newList)
         #print 'finished building pick up rows'
-        return rowList
+        return allEntries
 
-    def buildRowData(self, input):
+    def buildEntry(self, coverEntry):
+        """
+            Build a single entry form a cover sheet entry. This method will set the keys
+            - contactName
+            - contactCompany
+            - deliveryTime
+            - startTime
+            - endTime
+            - pickUpTime
+            - guestCount
+            - location
+        """
+        rowData = RowData()
+
+        rowData.contactName    = ''
+        rowData.contactCompany = ''
+        rowData.deliveryTime   = ''
+        rowData.startTime      = ''
+        rowData.endTime        = ''
+        rowData.pickUpTime     = ''
+        rowData.guestCount     = ''
+        rowData.location       = ''
+        # retrieve the Order ID
+        rowData.orderID = coverEntry.find('span', 'orderid').get_text().strip()
+
+        # retrive the contact information
+        if coverEntry.find('span', 'shipname') is not None:
+            rowData.contactName = coverEntry.find('span', 'shipname').get_text().strip()
+        if coverEntry.find('span', 'shipcompanyname') is not None:
+            rowData.contactCompany = coverEntry.find('span', 'shipcompanyname').get_text().strip()
+
+        # retrieve important times
+        if coverEntry.find('span', 'shiptime1') is not None:
+            rowData.deliveryTime = coverEntry.find('span', 'shiptime1').get_text().strip()
+        if coverEntry.find('span', 'shiptime2') is not None:
+            rowData.startTime = coverEntry.find('span', 'shiptime2').get_text().strip()
+        if coverEntry.find('span', 'shiptime3') is not None:
+            rowData.endTime = coverEntry.find('span', 'shiptime3').get_text().strip()
+        if coverEntry.find('span', 'shiptime4') is not None:
+            rowData.pickUpTime = coverEntry.find('span', 'shiptime4').get_text().strip()
+
+        # guest count
+        logger.debug('Getting guest count')
+        rowData.guestCount = coverEntry.find('span', 'guestcount').get_text().strip()
+
+        # Ship information
+        logger.debug('Executing method to get ship info')
+        rowData = self.getShipInfo(rowData, coverEntry)
+
+        rowData.location = self.buildLocationString(rowData)
+        return rowData
+
+    def buildEntries(self, input):
         """
             Build out the data for all rows
             For each basiccoverorw item in the extracted data create a new RowObject
@@ -100,55 +172,28 @@ class Parser():
         """
         #print 'Building out row data'
         logger.debug('Building out row data')
-        allRows = list()
+        allEntries = list()
         orderCount = 0
-        # populate with an empty RowData object for each available row.
 
         pageSoup = BeautifulSoup(input, "lxml")
         # Gather all of the rows from the input
-        coverRows = pageSoup.select(".basiccoverorw")
-        logger.debug('The size of the list is: ' + str(len(coverRows)))
+        coverEntries = pageSoup.select(".basiccoverorw")
+        logger.debug('The size of the list is: ' + str(len(coverEntries)))
         # No longer using a secondary BeautifulSoup object for each row
         # as this was causing spinning issues on OpenShift
-        for orderCount in range (len(coverRows)):
+        for orderCount in range (len(coverEntries)):
+
             logger.debug('Collecting information for order: ' + str(orderCount))
-            rowData = RowData()
-            # retrieve the Order ID
-            rowData.orderID = coverRows[orderCount].find('span', 'orderid').get_text().strip()
+            entry = self.buildEntry(coverEntries[orderCount])
 
-            # retrive the contact information
-            if(coverRows[orderCount].find('span', 'shipname') is None) == False:
-                rowData.contactName = coverRows[orderCount].find('span', 'shipname').get_text().strip()
-            if(coverRows[orderCount].find('span', 'shipcompanyname') is None) == False:
-                rowData.contactCompany = coverRows[orderCount].find('span', 'shipcompanyname').get_text().strip()
-
-            # retrieve important times
-            if(coverRows[orderCount].find('span', 'shiptime1') is None) == False:
-                rowData.deliveryTime = coverRows[orderCount].find('span', 'shiptime1').get_text().strip()
-            if(coverRows[orderCount].find('span', 'shiptime2') is None) == False:
-                rowData.startTime = coverRows[orderCount].find('span', 'shiptime2').get_text().strip()
-            if(coverRows[orderCount].find('span', 'shiptime3') is None) == False:
-                rowData.endTime = coverRows[orderCount].find('span', 'shiptime3').get_text().strip()
-            if(coverRows[orderCount].find('span', 'shiptime4') is None) == False:
-                rowData.pickUpTime = coverRows[orderCount].find('span', 'shiptime4').get_text().strip()
-
-            # guest count
-            logger.debug('Getting guest count')
-            rowData.guestCount = coverRows[orderCount].find('span', 'guestcount').get_text().strip()
-
-            # Ship information
-            logger.debug('Executing method to get ship info')
-            rowData = self.getShipInfo(rowData, coverRows[orderCount])
-
-            rowData.location = self.buildLocationString(rowData)
 
             # TASK I need to find some way to handle this list properly
-            allRows.append(rowData)
+            allEntries.append(entry)
             orderCount = orderCount + 1
 
         #print 'Finished building row data'
         logger.debug('Finished building row data')
 
         # Now create the pick up entries
-        allRows = self.buildPickUpData(allRows)
-        return allRows
+        allEntries = self.buildPickUpData(allEntries)
+        return allEntries

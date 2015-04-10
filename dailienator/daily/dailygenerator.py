@@ -43,12 +43,6 @@ class DailyGenerator():
         except ValueError:
             raise ValueError("Invalid date")
 
-    def testDef(self):
-        f = open('/var/lib/openshift/524f394ee0b8cd488d000029/app-root/repo/wsgi/openshift/long_day.html', 'r')
-        data = f.read()
-        print 'Got the sheet data from test file'
-        return data
-
     def isLoggedIn(self, data):
         """
             Verify that the user has successfully logged into the CaterTrax system.
@@ -513,40 +507,6 @@ class DailyGenerator():
                 os.remove(path)
         return "done"
 
-    def executeDailyCreation(self, username, password, date):
-        """
-            Function used for manually testing the daily generation without having an
-            AccountUser object.
-        """
-        print 'start'
-        logger.debug('Starting the dailienator process')
-        # data = self.testDef()
-        logger.debug('Retrieving data')
-        data = self.retrieveSheetData(username, password, date)
-        logger.debug('Verifying we are logged in')
-        loggedIn = self.isLoggedIn(data)
-        if loggedIn == "connection_error":
-            return "error"
-        # Check that the username was correct
-        if loggedIn == "false":
-            return "error"
-        # Check for any unknown errors logging in
-        elif loggedIn == "unknown_error":
-            return "error"
-        logger.debug('Building row data')
-        rowList = self.buildRowData(data)
-        if rowList == "error":
-            return "error"
-        logger.debug('Building pick up data')
-        rowList = self.buildPickUpData(rowList)
-        logger.debug('Sorting row data')
-        rowList = self.sortRowList(rowList)
-        logger.debug('Building the excel sheet')
-        daily = self.buildExcelSheet(rowList, date)
-        #self.emailFile(daily, date)
-        logger.debug('Completing the dailienator process')
-        return "done"
-
     def generateDaily(self, user, date):
         '''
             Generate the Daily file using the AccountUser information
@@ -573,7 +533,7 @@ class DailyGenerator():
             self.isLoggedIn(data)
 
             # Start parsing of data
-            rowList = my_parser.buildRowData(data)
+            rowList = my_parser.buildEntries(data)
 
             finishNormal = time.time()
             totalNormal = (finishNormal - startNormal)
