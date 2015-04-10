@@ -92,6 +92,21 @@ class Parser():
             if (('all disposable' in entry.serviceStyle.lower())
             or ('all disposable' in entry.eventStyle.lower())) == False and entry.endTime :
                 pickUpRow = RowData()
+                pickUpRow.contactName    = ''
+                pickUpRow.contactCompany = ''
+                pickUpRow.deliveryTime   = ''
+                pickUpRow.startTime      = ''
+                pickUpRow.endTime        = ''
+                pickUpRow.pickUpTime     = ''
+                pickUpRow.guestCount     = ''
+                pickUpRow.location       = ''
+                pickUpRow.building       = ''
+                pickUpRow.room           = ''
+                pickUpRow.floor          = ''
+                pickUpRow.serviceStyle   = ''
+                pickUpRow.eventStyle     = ''
+                pickUpRow.specialNotes   = {}
+
                 pickUpRow.guestCount = 'P/U'
                 if hasattr(entry, 'orderID'):
                     pickUpRow.orderID = entry.orderID

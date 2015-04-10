@@ -228,8 +228,8 @@ class DailyGenerator():
             Build out the excel sheet
             Iterate through the list of RowObjects, writing information in
             proper format
-            This method expects each element of input to  possibly have the following keys.
-            The keys are not guaranteed to exist however.
+            This method expects each element of input to  have the following keys.
+            The values of the keys may be either empty strings or empty dicts
             - building
             - room
             - floor
@@ -244,6 +244,7 @@ class DailyGenerator():
             - endTime
             - contactName
             - contactCompany
+            - specialNotes
         """
         #print 'Starting to build the excel file'
         headers = ['Guest Count', 'Set Time', 'Contract #', 'Location',
@@ -421,22 +422,22 @@ class DailyGenerator():
 
         for row in input:
             worksheet.set_row(rowCounter, 42)
-            if hasattr(row, 'deliveryTime'):
+            if row.deliveryTime:
                 worksheet.write(rowCounter, setTimeColNum, row.deliveryTime, eventFormat)
-            if hasattr(row, 'guestCount') and row.guestCount == "P/U":
+            if row.guestCount and row.guestCount == "P/U":
                 worksheet.write(rowCounter, guestColNum, row.guestCount, pickUpFormat)
                 worksheet.write(rowCounter, contractNumColNum, "", eventFormat)
                 worksheet.write(rowCounter, locationColNum, row.location, eventFormat)
-            elif hasattr(row, 'guestCount'):
+            elif row.guestCount:
                 worksheet.write(rowCounter, guestColNum, row.guestCount, eventFormat)
                 worksheet.write(rowCounter, contractNumColNum, row.orderID, eventFormat)
                 worksheet.write(rowCounter, locationColNum, row.location, eventFormat)
 
             # Write the service style column
-            if hasattr(row, 'serviceStyle'):
+            if row.serviceStyle:
                 # If this is a All Disposable event, write service style as "All Disposable"
-                if ((hasattr(row, 'serviceStyle') and'all disposable' in row.serviceStyle.lower())
-                or (hasattr(row, 'eventStyle') and 'all disposable' in row.eventStyle.lower())):
+                if ((row.serviceStyle != '' and 'all disposable' in row.serviceStyle.lower())
+                    or (row.eventStyle != '' and 'all disposable' in row.eventStyle.lower())):
                     worksheet.write(rowCounter, serviceColNum, "All Disposable", eventFormat)
                 else:
                     worksheet.write(rowCounter, serviceColNum, row.serviceStyle, eventFormat)
@@ -444,15 +445,16 @@ class DailyGenerator():
                 worksheet.write(rowCounter, serviceColNum, "", eventFormat)
             # Only write to event column in special circumstances PHASE 2
             worksheet.write(rowCounter, eventColNum, "", eventFormat)
-            if hasattr(row, 'pickUpTime'):
+            if row.pickUpTime:
                 worksheet.write(rowCounter, pickUpColNum, row.pickUpTime, eventFormat)
-            elif hasattr(row, 'endTime'):
+            elif row.endTime:
                 worksheet.write(rowCounter, pickUpColNum, row.endTime, eventFormat)
             else:
                 worksheet.write(rowCounter, pickUpColNum, "", eventFormat)
             worksheet.write(rowCounter, assignedCatererColNum, "", eventFormat)
-            if hasattr(row, 'specialInstructions'):
-                worksheet.write(rowCounter, specialColNum, row.specialInstructions, attendFormat)
+            if row.specialNotes:
+                # TODO Add logic to iterate over the special notes here
+                worksheet.write(rowCounter, specialColNum, "", attendFormat)
             else:
                 worksheet.write(rowCounter, specialColNum, "", eventFormat)
             worksheet.write(rowCounter, leadColNum, "", eventFormat)
