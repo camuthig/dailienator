@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 
-from models import AccountUser
+from models import *
 
 class AccountUserCreateForm(forms.ModelForm):
     password2 = forms.CharField(label="Confirm Password",
@@ -85,3 +85,17 @@ class AccountUserCaterTraxPasswordUpdateForm(forms.ModelForm):
         self.user.catertrax_password = cleaned_data.get("catertrax_password")
         self.user.save()
         return self.user
+
+class AccountStaticDailyEntryCreateForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super(AccountStaticDailyEntryCreateForm, self).__init__(*args, **kwargs)
+
+    class Meta:
+        model = AccountStaticDailyEntry
+        fields = ['position', 'column', 'value']
+
+    def save(self, commit=True):
+        #Set the account ID to be that of the requesting user's.
+        self.instance.account = self.user.account
+        super(AccountStaticDailyEntryCreateForm, self).save(commit)

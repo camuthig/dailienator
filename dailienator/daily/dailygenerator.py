@@ -22,17 +22,17 @@ from dailienator.sodexoaccounts.models import AccountUser, Account
 
 # global variables
 # Column numbers
-guestColNum = 0
-setTimeColNum = 1
-contractNumColNum = 2
-locationColNum = 3
-serviceColNum = 4
-eventColNum = 5
-pickUpColNum = 6
-assignedCatererColNum = 7
-specialColNum = 8
-leadColNum = 9
-vehicleColNum = 10
+guest_count_col          = 0
+set_time_col             = 1
+contract_number_col      = 2
+location_col             = 3
+service_style_col        = 4
+event_style_col          = 5
+pick_up_time_col         = 6
+assigned_caterer_col     = 7
+special_instructions_col = 8
+lead_on_event_col        = 9
+vehicle_col              = 10
 
 logger = logging.getLogger(__name__)
 
@@ -288,7 +288,8 @@ class DailyGenerator():
         'valign':   'vcenter',
         'fg_color': '#92D050',
         'font_name': 'Arial',
-        'font_size': 20,
+        'font_size': 16,
+        'text_wrap': True
         })
         headerFormat = workbook.add_format({
         'top': 1,
@@ -370,26 +371,31 @@ class DailyGenerator():
         })
 
         # Column widths
-        worksheet.set_column(guestColNum, guestColNum, 6)
-        worksheet.set_column(setTimeColNum, setTimeColNum, 10)
-        worksheet.set_column(contractNumColNum, contractNumColNum, 11)
-        worksheet.set_column(locationColNum, locationColNum, 19)
-        worksheet.set_column(serviceColNum, serviceColNum, 13)
-        worksheet.set_column(eventColNum, eventColNum, 13)
-        worksheet.set_column(pickUpColNum, pickUpColNum, 20)
-        worksheet.set_column(assignedCatererColNum, assignedCatererColNum, 22)
-        worksheet.set_column(specialColNum, specialColNum, 20)
-        worksheet.set_column(leadColNum, leadColNum, 19)
-        worksheet.set_column(vehicleColNum, vehicleColNum, 9)
+        worksheet.set_column(guest_count_col, guest_count_col, 6)
+        worksheet.set_column(set_time_col, set_time_col, 10)
+        worksheet.set_column(contract_number_col, contract_number_col, 11)
+        worksheet.set_column(location_col, location_col, 19)
+        worksheet.set_column(service_style_col, service_style_col, 13)
+        worksheet.set_column(event_style_col, event_style_col, 13)
+        worksheet.set_column(pick_up_time_col, pick_up_time_col, 20)
+        worksheet.set_column(assigned_caterer_col, assigned_caterer_col, 22)
+        worksheet.set_column(special_instructions_col, special_instructions_col, 20)
+        worksheet.set_column(lead_on_event_col, lead_on_event_col, 19)
+        worksheet.set_column(vehicle_col, vehicle_col, 9)
 
         # build cover row
         worksheet.set_row(0, 75)
-        worksheet.merge_range(0, guestColNum, 0, contractNumColNum, "", coverFormat)
-        # worksheet.insert_image(0, setTimeColNum, 'images\emory_catering.jpeg', {'x_offset': -30, 'y_offset': 10})
-        worksheet.merge_range(0, locationColNum, 0, pickUpColNum, "inspirational saying", coverSayingFormat)
+        worksheet.merge_range(0, guest_count_col, 0, contract_number_col, account.name, coverFormat)
+        # worksheet.insert_image(0, set_time_col, 'images\emory_catering.jpeg', {'x_offset': -30, 'y_offset': 10})
+        # TODO Get images working again - will need to upload them
+
+        if account.header_slogan:
+          worksheet.merge_range(0, location_col, 0, pick_up_time_col, account.header_slogan, coverSayingFormat)
+        else :
+            worksheet.merge_range(0, location_col, 0, pick_up_time_col, "Visit the Account Page to Set a Slogan", coverSayingFormat)
         # Build out the date
         writeDate = time.strftime('%A , %B %d, %Y', inputDate)
-        worksheet.merge_range(0, assignedCatererColNum, 0, vehicleColNum, writeDate, coverFormat)
+        worksheet.merge_range(0, assigned_caterer_col, 0, vehicle_col, writeDate, coverFormat)
         # build header rows
         columnCounter = 0
         for header in headers:
@@ -405,12 +411,12 @@ class DailyGenerator():
         if account.catertrax_url == 'https://emory.catertrax.com/':
             # insert the start day row
             for columnCounter in range (len(headers) + 1):
-                if columnCounter == locationColNum:
-                    worksheet.write(2, locationColNum, "Thermometer/ Sanitizer/Temp Log", startFormat)
-                elif columnCounter == setTimeColNum:
+                if columnCounter == location_col:
+                    worksheet.write(2, location_col, "Thermometer/ Sanitizer/Temp Log", startFormat)
+                elif columnCounter == set_time_col:
                     worksheet.write(2, columnCounter, "", startFormat)
-                elif columnCounter == specialColNum:
-                    worksheet.write(2, specialColNum, "UNLOCK SOUTH ELEVATOR & HALLWAY DOOR", startFormat)
+                elif columnCounter == special_instructions_col:
+                    worksheet.write(2, special_instructions_col, "UNLOCK SOUTH ELEVATOR & HALLWAY DOOR", startFormat)
                 else:
                     worksheet.write(2, columnCounter, "", eventFormat)
                 columnCounter += 1
@@ -423,42 +429,42 @@ class DailyGenerator():
         for row in input:
             worksheet.set_row(rowCounter, 42)
             if row.deliveryTime:
-                worksheet.write(rowCounter, setTimeColNum, row.deliveryTime, eventFormat)
+                worksheet.write(rowCounter, set_time_col, row.deliveryTime, eventFormat)
             if row.guestCount and row.guestCount == "P/U":
-                worksheet.write(rowCounter, guestColNum, row.guestCount, pickUpFormat)
-                worksheet.write(rowCounter, contractNumColNum, "", eventFormat)
-                worksheet.write(rowCounter, locationColNum, row.location, eventFormat)
+                worksheet.write(rowCounter, guest_count_col, row.guestCount, pickUpFormat)
+                worksheet.write(rowCounter, contract_number_col, "", eventFormat)
+                worksheet.write(rowCounter, location_col, row.location, eventFormat)
             elif row.guestCount:
-                worksheet.write(rowCounter, guestColNum, row.guestCount, eventFormat)
-                worksheet.write(rowCounter, contractNumColNum, row.orderID, eventFormat)
-                worksheet.write(rowCounter, locationColNum, row.location, eventFormat)
+                worksheet.write(rowCounter, guest_count_col, row.guestCount, eventFormat)
+                worksheet.write(rowCounter, contract_number_col, row.orderID, eventFormat)
+                worksheet.write(rowCounter, location_col, row.location, eventFormat)
 
             # Write the service style column
             if row.serviceStyle:
                 # If this is a All Disposable event, write service style as "All Disposable"
                 if ((row.serviceStyle != '' and 'all disposable' in row.serviceStyle.lower())
                     or (row.eventStyle != '' and 'all disposable' in row.eventStyle.lower())):
-                    worksheet.write(rowCounter, serviceColNum, "All Disposable", eventFormat)
+                    worksheet.write(rowCounter, service_style_col, "All Disposable", eventFormat)
                 else:
-                    worksheet.write(rowCounter, serviceColNum, row.serviceStyle, eventFormat)
+                    worksheet.write(rowCounter, service_style_col, row.serviceStyle, eventFormat)
             else:
-                worksheet.write(rowCounter, serviceColNum, "", eventFormat)
+                worksheet.write(rowCounter, service_style_col, "", eventFormat)
             # Only write to event column in special circumstances PHASE 2
-            worksheet.write(rowCounter, eventColNum, "", eventFormat)
+            worksheet.write(rowCounter, event_style_col, "", eventFormat)
             if row.pickUpTime:
-                worksheet.write(rowCounter, pickUpColNum, row.pickUpTime, eventFormat)
+                worksheet.write(rowCounter, pick_up_time_col, row.pickUpTime, eventFormat)
             elif row.endTime:
-                worksheet.write(rowCounter, pickUpColNum, row.endTime, eventFormat)
+                worksheet.write(rowCounter, pick_up_time_col, row.endTime, eventFormat)
             else:
-                worksheet.write(rowCounter, pickUpColNum, "", eventFormat)
-            worksheet.write(rowCounter, assignedCatererColNum, "", eventFormat)
+                worksheet.write(rowCounter, pick_up_time_col, "", eventFormat)
+            worksheet.write(rowCounter, assigned_caterer_col, "", eventFormat)
             if row.specialNotes:
                 # TODO Add logic to iterate over the special notes here
-                worksheet.write(rowCounter, specialColNum, "", attendFormat)
+                worksheet.write(rowCounter, special_instructions_col, "", attendFormat)
             else:
-                worksheet.write(rowCounter, specialColNum, "", eventFormat)
-            worksheet.write(rowCounter, leadColNum, "", eventFormat)
-            worksheet.write(rowCounter, vehicleColNum, "", eventFormat)
+                worksheet.write(rowCounter, special_instructions_col, "", eventFormat)
+            worksheet.write(rowCounter, lead_on_event_col, "", eventFormat)
+            worksheet.write(rowCounter, vehicle_col, "", eventFormat)
             #print 'Finished a row'
             rowCounter += 1
 
@@ -468,25 +474,25 @@ class DailyGenerator():
             columnCounter = 0
             for columnCounter in range (len(headers) + 1):
                 worksheet.set_row(rowCounter, 42)
-                if columnCounter == locationColNum:
+                if columnCounter == location_col:
                     worksheet.write(rowCounter, columnCounter,
                                     "COX HALL & PANTRY LOCK UP",
                                     endDayLocationFormat)
-                elif columnCounter == specialColNum:
+                elif columnCounter == special_instructions_col:
                     worksheet.merge_range(rowCounter, columnCounter,
                                             rowCounter, columnCounter + 1,
                                             "Be Sure To Sweep & Mop Elevators "
                                             "- ONLY LOCK SOUTH ELEVATORS",
                                             endDayInstructionsFormat)
                     columnCounter += 1
-                elif columnCounter == leadColNum:
+                elif columnCounter == lead_on_event_col:
                     # do nothing
                     pass
-                elif columnCounter == setTimeColNum:
-                    worksheet.write(rowCounter, setTimeColNum, "",
+                elif columnCounter == set_time_col:
+                    worksheet.write(rowCounter, set_time_col, "",
                                     endDayTimeCatererFormat)
-                elif columnCounter == assignedCatererColNum:
-                    worksheet.write(rowCounter, assignedCatererColNum, "",
+                elif columnCounter == assigned_caterer_col:
+                    worksheet.write(rowCounter, assigned_caterer_col, "",
                                     endDayTimeCatererFormat)
                 else:
                     worksheet.write(rowCounter, columnCounter, "", eventFormat)

@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, include, url
-from sodexoaccounts.views import AccountUserListView, AccountUserCreateView, AccountUserUpdateView, AccountUserDeleteView, AccountUpdateView, AccountUserCaterTraxPasswordUpdateView
+from sodexoaccounts.views import *
 from views import Login, Logout, PasswordUpdateView
 from support.views import SupportRequestView
 from daily.views import DailyCreateView
@@ -23,12 +23,16 @@ urlpatterns = patterns('',
     url(r'^users/$', AccountUserListView.as_view(), name='accountuser-list'),
     url(r'^users/create$', AccountUserCreateView.as_view(), name='accountuser-create'),
     url(r'^users/password/update$', PasswordUpdateView.as_view(), name='password-update'),
-    url(r'^users/catertrax_password/update', AccountUserCaterTraxPasswordUpdateView.as_view(), name='accountuser-catertrax-password-update'),
-    url(r'^users/(?P<username>[\w|.|@|+|-]+)/update', AccountUserUpdateView.as_view(), name='accountuser-update'),
-    url(r'^users/(?P<username>[\w|.|@|+|-]+)/delete', AccountUserDeleteView.as_view(), name='accountuser-delete'),
+    url(r'^users/catertrax_password/update$', AccountUserCaterTraxPasswordUpdateView.as_view(), name='accountuser-catertrax-password-update'),
+    url(r'^users/(?P<username>[\w|.|@|+|-]+)/update$', AccountUserUpdateView.as_view(), name='accountuser-update'),
+    url(r'^users/(?P<username>[\w|.|@|+|-]+)/delete$', AccountUserDeleteView.as_view(), name='accountuser-delete'),
 
     #Sodexo Account Views
-    url(r'^account/update', AccountUpdateView.as_view(), name='account-update'),
+    url(r'^account/update$', AccountUpdateView.as_view(), name='account-update'),
+    url(r'^account/static-entries$', AccountStaticEntriesListView.as_view(), name='account-entries'),
+    url(r'^account/static-entries/create$', AccountStaticEntriesCreateView.as_view(), name='account-entries-create'),
+    url(r'^account/static-entries/(?P<position>.+)/(?P<column>.+)/update$', AccountStaticEntriesUpdateView.as_view(), name='account-entries-update'),
+    url(r'^account/static-entries/(?P<position>.+)/(?P<column>.+)/delete$', AccountStaticEntriesDeleteView.as_view(), name='account-entries-delete'),
 
     #Daily Views
     url(r'^daily/create$', DailyCreateView.as_view(), name='daily-create'),
