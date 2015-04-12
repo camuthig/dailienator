@@ -20,12 +20,6 @@ class Account(models.Model):
     slug = models.SlugField(max_length=100, blank=True)
     header_slogan = models.CharField(max_length=255, blank=True)
 
-    def save(self, **kwargs):
-        # TODO Need to only set the slug on initial save
-        slug = '%s' % (self.name)
-        unique_slugify(self, slug)
-        super(Account, self).save()
-
     def __unicode__(self):
         return self.name
 
