@@ -6,6 +6,11 @@
                     <strong>{{ message }}</strong>
                 </div>
             {% endifequal %}
+            {% ifequal message.tags 'error' %}
+                <div class="alert alert-danger">
+                    <strong>{{ message }}</strong>
+                </div>
+            {% endifequal %}
         {% endfor %}
     {% endif %}
 {% endblock %}

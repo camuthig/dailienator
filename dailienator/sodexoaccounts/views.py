@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-
+from django.db import IntegrityError
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -164,6 +164,14 @@ class AccountStaticEntriesCreateView(SuccessMessageMixin, LoginRequiredMixin, Cr
         kwargs = super(AccountStaticEntriesCreateView, self).get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
+
+    def form_valid(self, form):
+        try:
+            return super(AccountStaticEntriesCreateView, self).form_valid(form)
+        except IntegrityError as ie:
+            messages.error(self.request, 'There is already an entry for that position and column')
+            logger.debug('Caught the exception')
+            return self.form_invalid(form)
 
     def get_success_url(self):
         """
