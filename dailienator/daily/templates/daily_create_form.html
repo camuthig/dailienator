@@ -12,40 +12,34 @@
 {% block content %}
 <div class="container">
 	<div class="row">
-        <div class=".col-md-6 .col-md-offset-3">
-            <h1>Create Daily</h1>
-        </div>
-    </div>
+		<div class=".col-md-6 .col-md-offset-3">
+			<h1>Create Daily</h1>
+		</div>
+	</div>
 	<div class="row">
-        <div class="col-md-6 col-md-offset-3">
-			{% if messages %}
-			<ul class="messages">
-				{% for message in messages %}
-				<li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-				{% endfor %}
-			</ul>
-			{% endif %}
+		<div class="col-md-6 col-md-offset-3">
+			{% include "home/form_messages.html.include" %}
 			<form class="form-horizontal" action="/daily/create" method="post">{% csrf_token %}
-	            {% for field in form.visible_fields %}
-	            <div id="div_{{ field.html_name }}"
-	                 class="form-group{% if field.errors %} has-error{% endif %}">
-	                <label for="id_{{ field.html_name }}" class="col-sm-2 control-label">
-	                	{{ field.label_tag }}
-	                </label>
-	                <div class="input-group date col-sm-10">
-	                {{ field }}
-	                </div>
-	                <div class="text-muted pull-right">
-	                    <small>{{ field.help_text }}</small>
-	                </div>
-	                <div class="help-block">
-	                    {{ field.errors }}
-	                </div>
-	            </div>
-	          	{% endfor %}
+				{% for field in form.visible_fields %}
+				<div id="div_{{ field.html_name }}"
+					 class="form-group{% if field.errors %} has-error{% endif %}">
+					<label for="id_{{ field.html_name }}" class="col-sm-2 control-label">
+						{{ field.label_tag }}
+					</label>
+					<div class="input-group date col-sm-10">
+					{{ field }}
+					</div>
+					<div class="text-muted pull-right">
+						<small>{{ field.help_text }}</small>
+					</div>
+					<div class="help-block">
+						{{ field.errors }}
+					</div>
+				</div>
+				{% endfor %}
 				<div class="form-actions">
-	                <button type="submit" class="btn btn-default">Create</button>
-	            </div>
+					<button type="submit" class="btn btn-default">Create</button>
+				</div>
 			</form>
 		</div>
 	</div>

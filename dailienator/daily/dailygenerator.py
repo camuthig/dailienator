@@ -385,7 +385,7 @@ class DailyGenerator():
         rowCounter = 1
         for header in headers:
             if header == 'Service Type':
-                worksheet.merge_range(rowCounter, columnCounter, 1, columnCounter + 1, header, headerFormat)
+                worksheet.merge_range(rowCounter, columnCounter, rowCounter, columnCounter + 1, header, headerFormat)
                 columnCounter += 2
             else:
                 worksheet.write(rowCounter, columnCounter, header, headerFormat)
@@ -401,7 +401,16 @@ class DailyGenerator():
                 worksheet.write(rowCounter, columnCounter, "", eventFormat)
             columnCounter = 0
             for entry in start_entries:
-                worksheet.write(rowCounter, columns.get(entry.column + '_col'), entry.value, startFormat)
+                if entry.column == 'service_style':
+                    worksheet.merge_range(
+                        rowCounter,
+                        columns.get('service_style_col'),
+                        rowCounter,
+                        columns.get('event_style_col'),
+                        entry.value,
+                        startFormat)
+                else:
+                    worksheet.write(rowCounter, columns.get(entry.column + '_col'), entry.value, startFormat)
             rowCounter += 1
 
         # Iterate through the input row data, adding the information as needed
@@ -449,14 +458,23 @@ class DailyGenerator():
 
         # insert the end day row
         end_entries = AccountStaticDailyEntry.objects.filter(account=account, position='end')
-        if start_entries:
+        if end_entries:
             # Put a blank entry for each column
             # Then add in the start format columns
             for columnCounter in range(len(columns)):
                 worksheet.write(rowCounter, columnCounter, "", eventFormat)
             columnCounter = 0
             for entry in end_entries:
-                worksheet.write(rowCounter, columns.get(entry.column + '_col'), entry.value, endFormat)
+                if entry.column == 'service_style':
+                    worksheet.merge_range(
+                        rowCounter,
+                        columns.get('service_style_col'),
+                        rowCounter,
+                        columns.get('event_style_col'),
+                        entry.value,
+                        endFormat)
+                else:
+                    worksheet.write(rowCounter, columns.get(entry.column + '_col'), entry.value, endFormat)
 
         workbook.close()
         return path
