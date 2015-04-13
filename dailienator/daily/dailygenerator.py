@@ -374,7 +374,7 @@ class DailyGenerator():
         # TODO Get images working again - will need to upload them
 
         if account.header_slogan:
-          worksheet.merge_range(0, columns['location_col'], 0, columns['pick_up_time_col'], account.header_slogan, coverSayingFormat)
+            worksheet.merge_range(0, columns['location_col'], 0, columns['pick_up_time_col'], account.header_slogan, coverSayingFormat)
         else :
             worksheet.merge_range(0, columns['location_col'], 0, columns['pick_up_time_col'], "Visit the Account Page to Set a Slogan", coverSayingFormat)
         # Build out the date
@@ -390,7 +390,7 @@ class DailyGenerator():
             else:
                 worksheet.write(rowCounter, columnCounter, header, headerFormat)
                 columnCounter += 1
-
+        rowCounter += 1
 
         columnCounter = 0
         start_entries = AccountStaticDailyEntry.objects.filter(account=account, position='start')
