@@ -18,7 +18,7 @@ from time import strftime
 
 from importlib import import_module
 
-from dailienator.sodexoaccounts.models import AccountUser, Account
+from dailienator.sodexoaccounts.models import AccountUser, Account, AccountStaticDailyEntry
 
 # global variables
 # Column numbers
@@ -342,35 +342,16 @@ class DailyGenerator():
         'font_size': 10,
         'fg_color': '#FF00FF',
         })
-        endDayLocationFormat = workbook.add_format({
+        endFormat = workbook.add_format({
         'border': 1,
-        'bold': True,
+        'align': 'center',
+        'valign': 'vcenter',
+        'text_wrap': True,
+        'font_name': 'Arial',
+        'font_size': 10,
         'font_color': '#0000FF',
-        'align': 'center',
-        'valign': 'vjustify',
-        'text_wrap': True,
-        'font_name': 'Arial',
-        'font_size': 10,
-        'fg_color': '#FFFF00',
-        })
-        endDayTimeCatererFormat = workbook.add_format({
-        'border': 1,
-        'align': 'center',
-        'valign': 'vcenter',
-        'text_wrap': True,
-        'font_name': 'Arial',
-        'font_size': 10,
-        'fg_color': '#3366FF',
-        })
-        endDayInstructionsFormat = workbook.add_format({
-        'border': 1,
-        'align': 'center',
-        'valign': 'vcenter',
-        'text_wrap': True,
-        'font_name': 'Arial',
-        'font_size': 10,
-        'font_color': '#FF0000',
         'bold': True,
+        'fg_color': '#FFFF00',
         })
 
         # Column widths
@@ -401,34 +382,29 @@ class DailyGenerator():
         worksheet.merge_range(0, columns['assigned_caterer_col'], 0, columns['vehicle_col'], writeDate, coverFormat)
         # build header rows
         columnCounter = 0
+        rowCounter = 1
         for header in headers:
             if header == 'Service Type':
-                worksheet.merge_range(1, columnCounter, 1, columnCounter + 1, header, headerFormat)
+                worksheet.merge_range(rowCounter, columnCounter, 1, columnCounter + 1, header, headerFormat)
                 columnCounter += 2
             else:
-                worksheet.write(1, columnCounter, header, headerFormat)
+                worksheet.write(rowCounter, columnCounter, header, headerFormat)
                 columnCounter += 1
 
 
         columnCounter = 0
-        if account.catertrax_url == 'https://emory.catertrax.com/':
-            # insert the start day row
-            for columnCounter in range (len(headers) + 1):
-                if columnCounter == columns['location_col']:
-                    worksheet.write(2, columns['location_col'], "Thermometer/ Sanitizer/Temp Log", startFormat)
-                elif columnCounter == columns['set_time_col']:
-                    worksheet.write(2, columnCounter, "", startFormat)
-                elif columnCounter == columns['special_instructions_col']:
-                    worksheet.write(2, columns['special_instructions_col'], "UNLOCK SOUTH ELEVATOR & HALLWAY DOOR", startFormat)
-                else:
-                    worksheet.write(2, columnCounter, "", eventFormat)
-                columnCounter += 1
-            rowCounter = 3
-        else:
-            #Only Emory has a start row setup  for now
-            rowCounter = 2
-        # Iterate through the input row data, adding the information as needed
+        start_entries = AccountStaticDailyEntry.objects.filter(account=account, position='start')
+        if start_entries:
+            # Put a blank entry for each column
+            # Then add in the start format columns
+            for columnCounter in range(len(columns)):
+                worksheet.write(rowCounter, columnCounter, "", eventFormat)
+            columnCounter = 0
+            for entry in start_entries:
+                worksheet.write(rowCounter, columns.get(entry.column + '_col'), entry.value, startFormat)
+            rowCounter += 1
 
+        # Iterate through the input row data, adding the information as needed
         for row in input:
             worksheet.set_row(rowCounter, 42)
             if row.deliveryTime:
@@ -472,34 +448,15 @@ class DailyGenerator():
             rowCounter += 1
 
         # insert the end day row
-        if account.catertrax_url == 'https://emory.catertrax.com/':
-            #Only Emory has a setup for the end of day row so far
+        end_entries = AccountStaticDailyEntry.objects.filter(account=account, position='end')
+        if start_entries:
+            # Put a blank entry for each column
+            # Then add in the start format columns
+            for columnCounter in range(len(columns)):
+                worksheet.write(rowCounter, columnCounter, "", eventFormat)
             columnCounter = 0
-            for columnCounter in range (len(headers) + 1):
-                worksheet.set_row(rowCounter, 42)
-                if columnCounter == columns['location_col']:
-                    worksheet.write(rowCounter, columnCounter,
-                                    "COX HALL & PANTRY LOCK UP",
-                                    endDayLocationFormat)
-                elif columnCounter == columns['special_instructions_col']:
-                    worksheet.merge_range(rowCounter, columnCounter,
-                                            rowCounter, columnCounter + 1,
-                                            "Be Sure To Sweep & Mop Elevators "
-                                            "- ONLY LOCK SOUTH ELEVATORS",
-                                            endDayInstructionsFormat)
-                    columnCounter += 1
-                elif columnCounter == columns['lead_on_event_col']:
-                    # do nothing
-                    pass
-                elif columnCounter == columns['set_time_col']:
-                    worksheet.write(rowCounter, columns['set_time_col'], "",
-                                    endDayTimeCatererFormat)
-                elif columnCounter == columns['assigned_caterer_col']:
-                    worksheet.write(rowCounter, columns['assigned_caterer_col'], "",
-                                    endDayTimeCatererFormat)
-                else:
-                    worksheet.write(rowCounter, columnCounter, "", eventFormat)
-                columnCounter += 1
+            for entry in end_entries:
+                worksheet.write(rowCounter, columns.get(entry.column + '_col'), entry.value, endFormat)
 
         workbook.close()
         return path
